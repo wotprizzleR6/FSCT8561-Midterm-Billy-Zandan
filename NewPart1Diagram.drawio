@@ -1,131 +1,140 @@
 <mxfile host="65bd71144e">
-    <diagram id="CCN71YnZl31PSu3bDrEQ" name="Page-1">
-        <mxGraphModel dx="1039" dy="559" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <diagram id="operation-sentinel-arch" name="Operation Sentinel Architecture">
+        <mxGraphModel dx="1100" dy="850" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-                    <mxGeometry height="80" width="280" x="20" y="50" as="geometry"/>
+                
+                <!-- Title Header -->
+                <mxCell id="title_box" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=2;fontColor=#000000;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;" value="FSCT 8561 — Operation Sentinel: System Architecture &amp; File Interaction Flowchart" vertex="1">
+                    <mxGeometry height="35" width="980" x="50" y="25" as="geometry"/>
                 </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-                    <mxGeometry height="80" width="280" x="540" y="50" as="geometry"/>
+                
+                <!-- Left Swimlane: client.py -->
+                <mxCell id="client_container" parent="1" style="swimlane;whiteSpace=wrap;html=1;startSize=28;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=2;fontColor=#000000;fontStyle=1;fontSize=12;rounded=0;collapsible=0;" value="client.py — Analyst Workstation (Interactive CLI, TCP Client, Local Scanners)" vertex="1">
+                    <mxGeometry height="480" width="310" x="50" y="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-                    <mxGeometry height="80" width="280" x="20" y="150" as="geometry"/>
+                <mxCell id="c_ui" parent="client_container" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=10;align=left;spacingLeft=8;" value="&lt;b&gt;1. AnalystConsole (Menu UI — Labs 1 &amp;amp; 3)&lt;/b&gt;&lt;br&gt;Runs interactive menu (options 1–9, ?), hides password/OTP input with getpass(), and saves CSV/JSON reports." vertex="1">
+                    <mxGeometry height="80" width="274" x="18" y="42" as="geometry"/>
                 </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-                    <mxGeometry height="80" width="280" x="540" y="150" as="geometry"/>
+                <mxCell id="c_scan" parent="client_container" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=10;align=left;spacingLeft=8;" value="&lt;b&gt;2. port_scan() (Local TCP Scanner — Lab 2 + Ch. 2/8)&lt;/b&gt;&lt;br&gt;Checks localhost scope (127.0.0.1) and scans ports 8760–8890 using 64 threads (socket.connect_ex or nmap -sT -Pn)." vertex="1">
+                    <mxGeometry height="80" width="274" x="18" y="142" as="geometry"/>
                 </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-                    <mxGeometry height="80" width="280" x="20" y="250" as="geometry"/>
+                <mxCell id="c_http" parent="client_container" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=10;align=left;spacingLeft=8;" value="&lt;b&gt;3. http_check() (Local HTTP Checker — Lab 5 + Ch. 4/10)&lt;/b&gt;&lt;br&gt;Sends non-destructive GET requests (allow_redirects=False) to check security headers, cookie flags, and server banners." vertex="1">
+                    <mxGeometry height="80" width="274" x="18" y="242" as="geometry"/>
                 </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-                    <mxGeometry height="80" width="280" x="540" y="250" as="geometry"/>
+                <mxCell id="c_tcp" parent="client_container" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=10;align=left;spacingLeft=8;" value="&lt;b&gt;4. SentinelConnection (Framed TCP Client — Labs 0 &amp;amp; 1)&lt;/b&gt;&lt;br&gt;Connects to 127.0.0.1:8888, sends JSON commands ending with 
+, and buffers recv(65536) chunks until 
+." vertex="1">
+                    <mxGeometry height="95" width="274" x="18" y="342" as="geometry"/>
                 </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-                    <mxGeometry height="80" width="280" x="20" y="350" as="geometry"/>
+                
+                <!-- Right Swimlane: server.py -->
+                <mxCell id="server_container" parent="1" style="swimlane;whiteSpace=wrap;html=1;startSize=28;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=2;fontColor=#000000;fontStyle=1;fontSize=12;rounded=0;collapsible=0;" value="server.py — Authenticated TCP Security Server (127.0.0.1:8888)" vertex="1">
+                    <mxGeometry height="480" width="450" x="580" y="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-                    <mxGeometry height="80" width="280" x="540" y="350" as="geometry"/>
+                <mxCell id="s_listen" parent="server_container" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=10;align=left;spacingLeft=8;" value="&lt;b&gt;1. SentinelServer &amp;amp; FramedSocket (TCP Listener — Labs 0 &amp;amp; 1 + Ch. 2/3)&lt;/b&gt;&lt;br&gt;Listens on 127.0.0.1:8888, limits active clients to 10 (threading.Lock), and runs one ClientSession thread per client." vertex="1">
+                    <mxGeometry height="80" width="414" x="18" y="42" as="geometry"/>
                 </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-9" parent="1" style="swimlane;whiteSpace=wrap;html=1;startSize=23;" value="client.py" vertex="1">
-                    <mxGeometry height="420" width="300" x="10" y="20" as="geometry"/>
+                <mxCell id="s_auth" parent="server_container" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=10;align=left;spacingLeft=8;" value="&lt;b&gt;2. cmd_login() &amp;amp; cmd_otp() (Password + TOTP MFA — Lab 3 + Ch. 14)&lt;/b&gt;&lt;br&gt;Step 1: Verifies salted PBKDF2-HMAC-SHA256 hash (600,000 iterations).&lt;br&gt;Step 2: Verifies 6-digit pyotp TOTP code and blocks replay via last_otp_counter." vertex="1">
+                    <mxGeometry height="85" width="414" x="18" y="142" as="geometry"/>
                 </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-12" parent="ThNiG4P637AA0V4ZxosS-9" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b style=&quot;color: rgb(63, 63, 63); scrollbar-color: rgba(139, 148, 158, 0.2) rgb(13, 17, 23); font-size: 11px; text-align: left;&quot;&gt;1. AnalystConsole (Menu UI)&lt;/b&gt;" vertex="1">
-                    <mxGeometry height="30" width="160" x="20" y="30" as="geometry"/>
+                <mxCell id="s_rbac" parent="server_container" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=10;align=left;spacingLeft=8;" value="&lt;b&gt;3. authorize() &amp;amp; audit() (Role Gatekeeper &amp;amp; Safe Logger — Labs 1 &amp;amp; 3)&lt;/b&gt;&lt;br&gt;Checks session state (AUTHENTICATED) and role (analyst vs. admin). Writes redacted logs (never logs passwords or OTPs)." vertex="1">
+                    <mxGeometry height="80" width="414" x="18" y="247" as="geometry"/>
                 </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-13" parent="ThNiG4P637AA0V4ZxosS-9" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;span style=&quot;color: rgb(26, 32, 44); text-align: left;&quot;&gt;&lt;font style=&quot;font-size: 9px;&quot;&gt;Runs the interactive menu with options 1–9, 0, hides password/OTP input with getpass(), and saves CSV/JSON reports.&lt;/font&gt;&lt;/span&gt;" vertex="1">
-                    <mxGeometry height="60" width="260" x="20" y="50" as="geometry"/>
+                <mxCell id="s_pcap" parent="server_container" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=10;align=left;spacingLeft=8;" value="&lt;b&gt;4. analyze_pcap() (Offline Scapy PCAP Analyzer — Lab 4 + Ch. 12)&lt;/b&gt;&lt;br&gt;Validates filename with resolve_pcap(), parses packets via rdpcap(), and detects vertical port scans, SYN bursts, and UDP/53 anomalies." vertex="1">
+                    <mxGeometry height="95" width="414" x="18" y="347" as="geometry"/>
                 </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-11" parent="ThNiG4P637AA0V4ZxosS-9" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b style=&quot;scrollbar-color: rgba(139, 148, 158, 0.2) rgb(13, 17, 23); font-size: 11px; text-align: left; color: rgb(63, 63, 63);&quot;&gt;2. port_scan() (TCP SCANNER)&lt;/b&gt;" vertex="1">
-                    <mxGeometry height="30" width="170" x="20" y="130" as="geometry"/>
+                
+                <!-- Bottom Supporting Files Row -->
+                <mxCell id="file_reports" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontColor=#000000;fontSize=9.5;align=left;spacingLeft=8;" value="&lt;b&gt;reports/ Folder (Output Evidence)&lt;/b&gt;&lt;br&gt;- port_scan_*.csv&lt;br&gt;- http_observations_*.csv &amp;amp; http_findings_*.csv&lt;br&gt;- pcap_analysis_*.json" vertex="1">
+                    <mxGeometry height="105" width="215" x="50" y="610" as="geometry"/>
                 </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-19" parent="ThNiG4P637AA0V4ZxosS-9" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;span style=&quot;color: rgb(26, 32, 44); text-align: left;&quot;&gt;&lt;font style=&quot;font-size: 9px;&quot;&gt;Sends GET requests on port 8765 to check security headers, cookie flags, and server banners.&lt;/font&gt;&lt;/span&gt;" vertex="1">
-                    <mxGeometry height="60" width="260" x="20" y="250" as="geometry"/>
+                <mxCell id="file_web" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontColor=#000000;fontSize=9.5;align=left;spacingLeft=8;" value="&lt;b&gt;test_website.py (Local HTTP Target)&lt;/b&gt;&lt;br&gt;Listens on http://127.0.0.1:8765/&lt;br&gt;Serves /, /health, /redirect, and /missing with intentional header and cookie gaps." vertex="1">
+                    <mxGeometry height="105" width="220" x="285" y="610" as="geometry"/>
                 </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-25" parent="ThNiG4P637AA0V4ZxosS-9" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;span style=&quot;color: rgb(26, 32, 44); text-align: left;&quot;&gt;&lt;font style=&quot;font-size: 9px;&quot;&gt;Connects to 127.0.0.1:8888, sends JSON commands ending with \n, and buffers recv(65536) chunks until \n.&lt;/font&gt;&lt;/span&gt;" vertex="1">
-                    <mxGeometry height="60" width="260" x="20" y="350" as="geometry"/>
+                <mxCell id="file_users" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontColor=#000000;fontSize=9.5;align=left;spacingLeft=8;" value="&lt;b&gt;users.json (Credential Store)&lt;/b&gt;&lt;br&gt;Stores username, role, salted PBKDF2 hash, Base32 TOTP secret, and last_otp_counter." vertex="1">
+                    <mxGeometry height="105" width="160" x="525" y="610" as="geometry"/>
                 </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-10" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="server.py" vertex="1">
-                    <mxGeometry height="420" width="300" x="530" y="20" as="geometry"/>
+                <mxCell id="file_log" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontColor=#000000;fontSize=9.5;align=left;spacingLeft=8;" value="&lt;b&gt;sentinel_audit.log (Audit Log)&lt;/b&gt;&lt;br&gt;Stores timestamped security events with RedactingFilter protection." vertex="1">
+                    <mxGeometry height="105" width="160" x="700" y="610" as="geometry"/>
                 </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-28" parent="ThNiG4P637AA0V4ZxosS-10" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b style=&quot;color: rgb(63, 63, 63); scrollbar-color: rgba(139, 148, 158, 0.2) rgb(13, 17, 23); font-size: 11px; text-align: left;&quot;&gt;2. cmd_login() &amp;amp; cmd_otp() (MFA)&lt;/b&gt;" vertex="1">
-                    <mxGeometry height="30" width="195" x="15" y="130" as="geometry"/>
+                <mxCell id="file_pcap" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontColor=#000000;fontSize=9.5;align=left;spacingLeft=8;" value="&lt;b&gt;FSCT8561_Operation_Sentinel_Traffic.pcap&lt;/b&gt;&lt;br&gt;Instructor-supplied capture file (123 packets) read offline by server.py." vertex="1">
+                    <mxGeometry height="105" width="155" x="875" y="610" as="geometry"/>
                 </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-30" parent="ThNiG4P637AA0V4ZxosS-10" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b style=&quot;color: rgb(63, 63, 63); scrollbar-color: rgba(139, 148, 158, 0.2) rgb(13, 17, 23); font-size: 11px; text-align: left;&quot;&gt;3. authorize() &amp;amp; audit() (RBAC)&lt;/b&gt;" vertex="1">
-                    <mxGeometry height="30" width="170" x="20" y="230" as="geometry"/>
-                </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-32" parent="ThNiG4P637AA0V4ZxosS-10" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b style=&quot;color: rgb(63, 63, 63); scrollbar-color: rgba(139, 148, 158, 0.2) rgb(13, 17, 23); font-size: 11px; text-align: left;&quot;&gt;4. analyze_pcap() (Offline Scapy PCAP Analyzer)&lt;/b&gt;" vertex="1">
-                    <mxGeometry height="30" width="260" x="20" y="330" as="geometry"/>
-                </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-14" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;span style=&quot;color: rgb(26, 32, 44); text-align: left;&quot;&gt;&lt;font style=&quot;font-size: 9px;&quot;&gt;Checks localhost (127.0.0.1) and scans ports 8760–8890 with socket.connect_ex or nmap -sT -Pn.&lt;/font&gt;&lt;/span&gt;" vertex="1">
-                    <mxGeometry height="60" width="260" x="30" y="165" as="geometry"/>
-                </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-17" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b style=&quot;color: rgb(63, 63, 63); scrollbar-color: rgba(139, 148, 158, 0.2) rgb(13, 17, 23); font-size: 11px; text-align: left;&quot;&gt;3. http_check() (Web Checker)&amp;nbsp;&lt;/b&gt;" vertex="1">
-                    <mxGeometry height="30" width="210" x="10" y="250" as="geometry"/>
-                </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-20" edge="1" parent="1" source="ThNiG4P637AA0V4ZxosS-3" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="ThNiG4P637AA0V4ZxosS-4" value="">
-                    <mxGeometry height="50" relative="1" width="50" as="geometry">
-                        <mxPoint x="320" y="190" as="sourcePoint"/>
-                        <mxPoint x="480" y="190" as="targetPoint"/>
+
+                <!-- ARROWS -->
+
+                <!-- Step 1: Port Scan (c_scan -> s_listen) -->
+                <mxCell id="edge_scan_server" edge="1" parent="1" source="c_scan" target="s_listen" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontColor=#000000;fontSize=9.5;fontStyle=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=classic;" value="Step 1: Local Port Scan on Ports 8760–8890&#xa;Discovers open ports 8765 and 8888">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="445" y="262"/>
+                            <mxPoint x="445" y="162"/>
+                        </Array>
+                        <mxPoint x="0" y="-14" as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-21" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;font style=&quot;font-size: 8px;&quot;&gt;&lt;span style=&quot;color: rgb(26, 54, 93); white-space: nowrap; background-color: rgb(255, 255, 255);&quot;&gt;Step 1: Scans TCP ports 8760–8890 and&lt;/span&gt;&lt;br style=&quot;color: rgb(63, 63, 63); scrollbar-color: rgba(139, 148, 158, 0.2) rgb(13, 17, 23); white-space: nowrap;&quot;&gt;&lt;span style=&quot;color: rgb(26, 54, 93); white-space: nowrap; background-color: rgb(255, 255, 255);&quot;&gt;detects server.py on port 8888 &amp;amp; test_website.py on port&amp;nbsp;&lt;/span&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8px;&quot;&gt;&lt;span style=&quot;color: rgb(26, 54, 93); white-space: nowrap; background-color: rgb(255, 255, 255);&quot;&gt;8765 as OPEN ports&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
-                    <mxGeometry height="60" width="240" x="300" y="135" as="geometry"/>
-                </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-24" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b style=&quot;color: rgb(63, 63, 63); scrollbar-color: rgba(139, 148, 158, 0.2) rgb(13, 17, 23); font-size: 11px; text-align: left;&quot;&gt;4. SentinelConnection (TCP Client)&lt;/b&gt;" vertex="1">
-                    <mxGeometry height="30" width="210" x="10" y="350" as="geometry"/>
-                </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-26" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b style=&quot;color: rgb(63, 63, 63); scrollbar-color: rgba(139, 148, 158, 0.2) rgb(13, 17, 23); font-size: 11px; text-align: left;&quot;&gt;1. SentinelServer &amp;amp; FramedSocket&amp;nbsp;&lt;/b&gt;&lt;b style=&quot;color: rgb(63, 63, 63); scrollbar-color: rgba(139, 148, 158, 0.2) rgb(13, 17, 23); font-size: 11px; text-align: left;&quot;&gt;(TCP Listener)&lt;/b&gt;" vertex="1">
-                    <mxGeometry height="30" width="270" x="545" y="50" as="geometry"/>
-                </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-27" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;span style=&quot;color: rgb(26, 32, 44); text-align: left;&quot;&gt;&lt;font style=&quot;font-size: 9px;&quot;&gt;Listens on 127.0.0.1:8888, limits active clients to 10, and runs one ClientSession thread per client.&lt;/font&gt;&lt;/span&gt;" vertex="1">
-                    <mxGeometry height="60" width="260" x="540" y="70" as="geometry"/>
-                </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-29" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;font style=&quot;font-size: 9px;&quot;&gt;&lt;span style=&quot;color: rgb(26, 32, 44); text-align: left;&quot;&gt;Step 1: Verifies salted PBKDF2-HMAC-SHA256 hash.&lt;/span&gt;&lt;br style=&quot;color: rgb(63, 63, 63); scrollbar-color: rgba(139, 148, 158, 0.2) rgb(13, 17, 23); text-align: left;&quot;&gt;&lt;span style=&quot;color: rgb(26, 32, 44); text-align: left;&quot;&gt;Step 2: Verifies 6-digit pyotp TOTP code and blocks replay with last_otp_counter.&lt;/span&gt;&lt;/font&gt;" vertex="1">
-                    <mxGeometry height="60" width="260" x="550" y="170" as="geometry"/>
-                </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-31" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;span style=&quot;color: rgb(26, 32, 44); text-align: left;&quot;&gt;&lt;font style=&quot;font-size: 9px;&quot;&gt;Checks session state and which role (analyst or admin). Writes redacted logs and never logs passwords or OTPs.&lt;/font&gt;&lt;/span&gt;" vertex="1">
-                    <mxGeometry height="60" width="260" x="550" y="270" as="geometry"/>
-                </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-33" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;span style=&quot;color: rgb(26, 32, 44); text-align: left;&quot;&gt;&lt;font style=&quot;font-size: 9px;&quot;&gt;Validates filename with resolve_pcap(), parses packets with rdpcap(), and detects port scans, SYN bursts, and UDP/53 anomalies.&lt;/font&gt;&lt;/span&gt;" vertex="1">
-                    <mxGeometry height="60" width="260" x="550" y="370" as="geometry"/>
-                </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-34" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-                    <mxGeometry height="100" width="130" x="10" y="490" as="geometry"/>
-                </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-35" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-                    <mxGeometry height="100" width="210" x="150" y="490" as="geometry"/>
-                </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-36" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-                    <mxGeometry height="100" width="140" x="370" y="490" as="geometry"/>
-                </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-37" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-                    <mxGeometry height="100" width="150" x="520" y="490" as="geometry"/>
-                </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-38" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-                    <mxGeometry height="100" width="150" x="680" y="490" as="geometry"/>
-                </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-39" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="&lt;b style=&quot;color: rgb(63, 63, 63); scrollbar-color: rgba(139, 148, 158, 0.2) rgb(13, 17, 23);&quot;&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;Reports&lt;/font&gt;&lt;/b&gt;" vertex="1">
-                    <mxGeometry height="30" width="50" x="20" y="490" as="geometry"/>
-                </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-41" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;span style=&quot;font-size: 9px; background-color: transparent;&quot;&gt;- port_scan_*.csv&lt;/span&gt;&lt;/div&gt;&lt;font style=&quot;font-size: 9px;&quot;&gt;&lt;span style=&quot;color: rgb(26, 32, 44);&quot;&gt;- http_observations_*.csv &amp;amp; http_findings_*.csv&lt;/span&gt;&lt;br style=&quot;color: rgb(63, 63, 63); scrollbar-color: rgba(139, 148, 158, 0.2) rgb(13, 17, 23);&quot;&gt;&lt;span style=&quot;color: rgb(26, 32, 44);&quot;&gt;- pcap_analysis_*.json&lt;/span&gt;&lt;/font&gt;" vertex="1">
-                    <mxGeometry height="60" width="150" x="20" y="520" as="geometry"/>
-                </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-42" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;span style=&quot;color: rgb(0, 0, 0); white-space: nowrap; background-color: rgb(255, 255, 255);&quot;&gt;&lt;font style=&quot;font-size: 8px;&quot;&gt;Saves CSV &amp;amp; JSON reports&lt;/font&gt;&lt;/span&gt;" vertex="1">
-                    <mxGeometry height="30" width="130" x="10" y="450" as="geometry"/>
-                </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-43" edge="1" parent="1" style="endArrow=classic;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="ThNiG4P637AA0V4ZxosS-34" value="">
-                    <mxGeometry height="50" relative="1" width="50" as="geometry">
-                        <mxPoint x="75" y="440" as="sourcePoint"/>
-                        <mxPoint x="95" y="480" as="targetPoint"/>
+
+                <!-- Step 2: HTTP Security Check (c_http -> file_web) -->
+                <mxCell id="edge_http_web" edge="1" parent="1" source="c_http" target="file_web" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontColor=#000000;fontSize=9.5;fontStyle=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=classic;" value="Step 2: Web Security Check on Port 8765&#xa;Inspects test website headers and cookies">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="395" y="362"/>
+                            <mxPoint x="395" y="610"/>
+                        </Array>
+                        <mxPoint x="35" y="-30" as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-45" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b style=&quot;color: rgb(63, 63, 63); scrollbar-color: rgba(139, 148, 158, 0.2) rgb(13, 17, 23); font-size: 11px; text-align: left;&quot;&gt;test_website.py (Local HTTP Target)&lt;/b&gt;" vertex="1">
-                    <mxGeometry height="30" width="210" x="150" y="490" as="geometry"/>
+
+                <!-- Step 3: MFA Auth (c_tcp -> s_auth) -->
+                <mxCell id="edge_tcp_auth" edge="1" parent="1" source="c_tcp" target="s_auth" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontColor=#000000;fontSize=9.5;fontStyle=1;exitX=1;exitY=0.35;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=classic;" value="Step 3: Two-Factor Login on Port 8888&#xa;Verifies password then asks for 6-digit code to unlock the session.">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="485" y="455"/>
+                            <mxPoint x="485" y="265"/>
+                        </Array>
+                        <mxPoint x="0" y="-14" as="offset"/>
+                    </mxGeometry>
                 </mxCell>
-                <mxCell id="ThNiG4P637AA0V4ZxosS-46" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;font style=&quot;font-size: 9px;&quot;&gt;&lt;span style=&quot;color: rgb(116, 66, 16); text-align: left;&quot;&gt;Listens on http://127.0.0.1:8765/&lt;/span&gt;&lt;br style=&quot;color: rgb(63, 63, 63); scrollbar-color: rgba(139, 148, 158, 0.2) rgb(13, 17, 23); text-align: left;&quot;&gt;&lt;span style=&quot;color: rgb(116, 66, 16); text-align: left;&quot;&gt;Serves /, /health, /redirect, and /missing with intentional header and cookie gaps.&lt;/span&gt;&lt;/font&gt;" vertex="1">
-                    <mxGeometry height="45" width="195" x="158" y="527.5" as="geometry"/>
+
+                <!-- Step 4: PCAP Analysis & Diag (c_tcp <-> s_pcap) -->
+                <mxCell id="edge_tcp_pcap" edge="1" parent="1" source="c_tcp" target="s_pcap" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontColor=#000000;fontSize=9.5;fontStyle=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;endArrow=classic;" value="Step 4: Run Protected Server Commands&#xa;Server inspects packet capture and returns the anomaly report.">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="525" y="493"/>
+                            <mxPoint x="525" y="475"/>
+                        </Array>
+                        <mxPoint x="0" y="-14" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+
+                <!-- Client -> reports/ -->
+                <mxCell id="edge_client_reports" edge="1" parent="1" source="client_container" target="file_reports" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;dashed=1;fontSize=9;fontColor=#000000;exitX=0.35;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=classic;" value="Saves CSV &amp; JSON reports">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="0" y="-8" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+
+                <!-- Server -> users.json -->
+                <mxCell id="edge_server_users" edge="1" parent="1" source="server_container" target="file_users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;dashed=1;fontSize=9;fontColor=#000000;exitX=0.08;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;startArrow=classic;endArrow=classic;" value="Reads/updates users.json">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="0" y="-8" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+
+                <!-- Server -> sentinel_audit.log -->
+                <mxCell id="edge_server_log" edge="1" parent="1" source="server_container" target="file_log" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;dashed=1;fontSize=9;fontColor=#000000;exitX=0.45;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=classic;" value="Appends safe audit events">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="0" y="-8" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+
+                <!-- Server -> Traffic.pcap -->
+                <mxCell id="edge_server_pcap" edge="1" parent="1" source="server_container" target="file_pcap" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;dashed=1;fontSize=9;fontColor=#000000;exitX=0.82;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=classic;" value="Reads offline via Scapy">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="0" y="-8" as="offset"/>
+                    </mxGeometry>
                 </mxCell>
             </root>
         </mxGraphModel>
