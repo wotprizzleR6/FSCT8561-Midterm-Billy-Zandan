@@ -1,0 +1,260 @@
+[
+  {
+    "test_id": "TEST-01",
+    "category": "Authentication & MFA",
+    "title": "Successful 2-Factor Authentication",
+    "objective": "Verify complete login sequence with valid password and valid TOTP code",
+    "input": {
+      "user": "analyst",
+      "password": "[SUPPLIED]",
+      "otp": "638330"
+    },
+    "expected": "CHALLENGE OTP_REQUIRED followed by OK AUTHENTICATED (role: analyst)",
+    "actual": {
+      "login_resp": "OTP_REQUIRED",
+      "otp_resp": "AUTHENTICATED",
+      "whoami_user": "analyst"
+    },
+    "status": "PASS",
+    "notes": "Session successfully established with role 'analyst'."
+  },
+  {
+    "test_id": "TEST-02",
+    "category": "Authentication & MFA",
+    "title": "Failed Password Verification",
+    "objective": "Verify server rejects incorrect password with generic error and decrements attempts",
+    "input": {
+      "user": "analyst",
+      "password": "WrongPassword999!"
+    },
+    "expected": "ERROR AUTH_FAILED with attempts_remaining: 2",
+    "actual": {
+      "status": "ERROR",
+      "code": "AUTH_FAILED",
+      "attempts_remaining": 2
+    },
+    "status": "PASS",
+    "notes": "Uniform timing preserved; remaining attempts accurately tracked."
+  },
+  {
+    "test_id": "TEST-03",
+    "category": "Authentication & MFA",
+    "title": "Failed TOTP Verification",
+    "objective": "Verify server rejects incorrect 6-digit TOTP code after valid password verification",
+    "input": {
+      "user": "analyst",
+      "otp": "000000"
+    },
+    "expected": "ERROR AUTH_FAILED",
+    "actual": {
+      "status": "ERROR",
+      "code": "AUTH_FAILED"
+    },
+    "status": "PASS",
+    "notes": "Rejection does not expose internal verification state."
+  },
+  {
+    "test_id": "TEST-04",
+    "category": "Authorization",
+    "title": "Unauthorized Access Rejection",
+    "objective": "Verify protected command (PCAP_ANALYZE) is rejected when unauthenticated",
+    "input": {
+      "cmd": "PCAP_ANALYZE"
+    },
+    "expected": "ERROR AUTH_REQUIRED ('Authentication (password + OTP) required.')",
+    "actual": {
+      "status": "ERROR",
+      "code": "AUTH_REQUIRED",
+      "message": "Authentication (password + OTP) required."
+    },
+    "status": "PASS",
+    "notes": "Protected server diagnostic commands cannot be accessed anonymously."
+  },
+  {
+    "test_id": "TEST-05",
+    "category": "Authorization",
+    "title": "Role-Based Access Control Enforcement",
+    "objective": "Verify authenticated user with 'analyst' role is blocked from admin-only 'DIAG' command",
+    "input": {
+      "user": "analyst_rbac (role: analyst)",
+      "cmd": "DIAG"
+    },
+    "expected": "ERROR FORBIDDEN (\"Role 'analyst' is not permitted to run DIAG.\")",
+    "actual": {
+      "status": "ERROR",
+      "code": "FORBIDDEN",
+      "message": "Role 'analyst' is not permitted to run DIAG."
+    },
+    "status": "PASS",
+    "notes": "Principle of Least Privilege enforced on administrative endpoints."
+  },
+  {
+    "test_id": "TEST-06",
+    "category": "TCP Port Scanner",
+    "title": "Open Port Detection (8765 & 8888)",
+    "objective": "Verify bounded TCP port scanner identifies active test services on 8765 and 8888",
+    "input": {
+      "target": "127.0.0.1",
+      "range": "8760-8890"
+    },
+    "expected": "Ports 8765 and 8888 reported as 'open'",
+    "actual": {
+      "open_ports_found": [
+        8765,
+        8888
+      ]
+    },
+    "status": "PASS",
+    "notes": "Reachable ports identified via 3-way handshake completion."
+  },
+  {
+    "test_id": "TEST-07",
+    "category": "TCP Port Scanner",
+    "title": "Closed Port Detection",
+    "objective": "Verify bounded TCP scanner correctly reports closed state for inactive port",
+    "input": {
+      "target": "127.0.0.1",
+      "port": 8766
+    },
+    "expected": "Port 8766 reported as 'closed'",
+    "actual": {
+      "port": 8766,
+      "state": "closed"
+    },
+    "status": "PASS",
+    "notes": "TCP RST received from operating system kernel."
+  },
+  {
+    "test_id": "TEST-08",
+    "category": "HTTP Checker",
+    "title": "HTTP Baseline Configuration Inspection",
+    "objective": "Verify HTTP checker flags missing CSP, missing nosniff, cookie insecurity, and Server header",
+    "input": {
+      "target": "http://127.0.0.1:8765/",
+      "paths": [
+        "/",
+        "/health",
+        "/redirect",
+        "/missing"
+      ]
+    },
+    "expected": "Flags missing security headers, missing cookie attributes, and Server disclosure",
+    "actual": {
+      "total_findings": 10,
+      "categories": [
+        "Information disclosure",
+        "Transport security",
+        "Exposed endpoint",
+        "Cookie attributes",
+        "Missing security header"
+      ]
+    },
+    "status": "PASS",
+    "notes": "Identifies baseline hardening gaps without false exploit claims."
+  },
+  {
+    "test_id": "TEST-09",
+    "category": "HTTP Checker",
+    "title": "HTTP Connection Failure Handling",
+    "objective": "Verify HTTP checker gracefully handles connection refused without unhandled exceptions",
+    "input": {
+      "target": "http://127.0.0.1:8999/"
+    },
+    "expected": "Reachable: False with CONNECTION_FAILED recorded",
+    "actual": {
+      "reachable": false,
+      "status": "CONNECTION_FAILED"
+    },
+    "status": "PASS",
+    "notes": "Graceful timeout and connection error containment verified."
+  },
+  {
+    "test_id": "TEST-10",
+    "category": "PCAP Analysis",
+    "title": "Server-Side PCAP Analysis & Threat Detection",
+    "objective": "Verify server loads PCAP, computes summary, and detects vertical scan, SSH burst, and UDP/53 anomaly",
+    "input": {
+      "file": "FSCT8561_Operation_Sentinel_Traffic.pcap"
+    },
+    "expected": "123 packets parsed; detects Vertical Scan (192.0.2.50), SSH SYN burst (192.0.2.60), and DNS anomaly (192.0.2.20)",
+    "actual": {
+      "packet_count": 123,
+      "detections": [
+        "Repeated SYN burst to single service",
+        "Unanswered connection attempts",
+        "Protocol mismatch on UDP/53 (DNS)",
+        "Port scan (vertical)",
+        "High packet rate (volume anomaly)"
+      ]
+    },
+    "status": "PASS",
+    "notes": "Server Scapy rdpcap() extracted all 6 suspicious activity indicators."
+  },
+  {
+    "test_id": "TEST-11",
+    "category": "Protocol Hardening",
+    "title": "Malformed Frame & Schema Validation",
+    "objective": "Verify server rejects invalid JSON frames and unexpected fields with structured errors",
+    "input": {
+      "subtest_a": "THIS_IS_NOT_JSON",
+      "subtest_b": "injected_field"
+    },
+    "expected": "ERROR BAD_JSON and ERROR BAD_REQUEST",
+    "actual": {
+      "subtest_a_code": "BAD_JSON",
+      "subtest_b_code": "BAD_REQUEST"
+    },
+    "status": "PASS",
+    "notes": "Framing and JSON decoders enforce strict boundaries and schema validation."
+  },
+  {
+    "test_id": "TEST-12",
+    "category": "Authentication & MFA",
+    "title": "TOTP Token Anti-Replay Enforcement",
+    "objective": "Verify identical TOTP token cannot be reused across multiple sessions within same 30s window",
+    "input": {
+      "user": "analyst_replay",
+      "replayed_otp": "464633"
+    },
+    "expected": "Session 1: OK AUTHENTICATED; Session 2 (Replay): ERROR AUTH_FAILED",
+    "actual": {
+      "session1_code": "AUTHENTICATED",
+      "session2_code": "AUTH_FAILED"
+    },
+    "status": "PASS",
+    "notes": "last_otp_counter atomically checked; replay blocked and audited."
+  },
+  {
+    "test_id": "TEST-13",
+    "category": "Session Management",
+    "title": "Clean Client-Server Disconnection",
+    "objective": "Verify EXIT command returns BYE GOODBYE and gracefully terminates the TCP session",
+    "input": {
+      "cmd": "EXIT"
+    },
+    "expected": "BYE GOODBYE status received and socket closed",
+    "actual": {
+      "status": "BYE",
+      "code": "GOODBYE",
+      "connected": false
+    },
+    "status": "PASS",
+    "notes": "TCP connection shutdown cleanly without lingering half-open state."
+  },
+  {
+    "test_id": "TEST-14",
+    "category": "Audit & Logging",
+    "title": "Audit Log Credential Sanitization",
+    "objective": "Inspect sentinel_audit.log to verify zero passwords, raw tokens, or secrets were written",
+    "input": {
+      "audit_file": "C:\\Users\\BillyZ\\Desktop\\FSCT8561-Labs-Billy-Zandan\\Midterm\\sentinel_audit.log"
+    },
+    "expected": "No plaintext passwords, raw OTPs, or secret keys in log records",
+    "actual": {
+      "audit_entries": 666,
+      "leaks_detected": []
+    },
+    "status": "PASS",
+    "notes": "Strict RedactingFilter and redaction helpers sanitize all security event logs."
+  }
+]

@@ -1,0 +1,15 @@
+# Ignore the entire .obsidian configuration folder
+/FSCT8561_Defense.pdf
+/README.md
+/MIDTERM_COMPLETION_GUIDE.md
+/LABS_TO_MIDTERM_CODE_MAPPING.md
+/INSTRUCTOR_EXPLANATION_GUIDE.md
+/generate_pdf.py
+/generate_defense_pdf.py
+/__pycache__
+/FSCT8561-Midterm-Billy-Zandan-A01371854.md
+/Mastering Python for Networking and Security - Second -- Jose Manuel Ortega -- 2021 -- Packt Publishing -- 97c706086e42a54e17ca09f3b5d68f0f -- Anna’s Archive (2).pdf
+/Use this report its the latest updated one FSCT8561-Midterm-Billy-Zandan-A01371854.docx
+/FSCT8561-Midterm-Billy-Zandan-A01371854.pdf
+/build_docx_and_pdf.py
+/architecture_flowchart.png

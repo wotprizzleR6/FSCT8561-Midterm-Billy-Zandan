@@ -1,0 +1,141 @@
+<mxfile host="65bd71144e">
+    <diagram id="operation-sentinel-arch" name="Operation Sentinel Architecture">
+        <mxGraphModel dx="1496" dy="805" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="850" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                
+                <!-- Title Header -->
+                <mxCell id="title_box" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1A365D;strokeColor=#0F2942;fontColor=#FFFFFF;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="FSCT 8561 — Operation Sentinel: System Architecture &amp; File Interaction Flowchart" vertex="1">
+                    <mxGeometry height="45" width="1320" x="40" y="20" as="geometry"/>
+                </mxCell>
+                
+                <!-- Left Swimlane: client.py -->
+                <mxCell id="client_container" parent="1" style="swimlane;whiteSpace=wrap;html=1;startSize=35;fillColor=#EBF8FF;strokeColor=#2B6CB0;fontColor=#1A365D;fontStyle=1;fontSize=13;rounded=1;strokeWidth=2;collapsible=0;" value="client.py — Analyst Workstation (Interactive CLI, TCP Client, Local Scanners)" vertex="1">
+                    <mxGeometry height="540" width="430" x="40" y="85" as="geometry"/>
+                </mxCell>
+                <mxCell id="c_ui" parent="client_container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B6CB0;fontColor=#1A202C;fontSize=11;align=left;spacingLeft=10;" value="&lt;b&gt;1. AnalystConsole (Menu UI — Labs 1 &amp;amp; 3)&lt;/b&gt;&lt;br&gt;Runs interactive menu (options 1–9, ?), hides password/OTP input with getpass(), and saves CSV/JSON reports." vertex="1">
+                    <mxGeometry height="85" width="380" x="25" y="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="c_scan" parent="client_container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B6CB0;fontColor=#1A202C;fontSize=11;align=left;spacingLeft=10;" value="&lt;b&gt;2. port_scan() (Local TCP Scanner — Lab 2 + Ch. 2/8)&lt;/b&gt;&lt;br&gt;Checks localhost scope (127.0.0.1) and scans ports 8760–8890 using 64 threads (socket.connect_ex or nmap -sT -Pn)." vertex="1">
+                    <mxGeometry height="85" width="380" x="25" y="165" as="geometry"/>
+                </mxCell>
+                <mxCell id="c_http" parent="client_container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B6CB0;fontColor=#1A202C;fontSize=11;align=left;spacingLeft=10;" value="&lt;b&gt;3. http_check() (Local HTTP Checker — Lab 5 + Ch. 4/10)&lt;/b&gt;&lt;br&gt;Sends non-destructive GET requests (allow_redirects=False) to check security headers, cookie flags, and server banners." vertex="1">
+                    <mxGeometry height="85" width="380" x="25" y="275" as="geometry"/>
+                </mxCell>
+                <mxCell id="c_tcp" parent="client_container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B6CB0;fontColor=#1A202C;fontSize=11;align=left;spacingLeft=10;" value="&lt;b&gt;4. SentinelConnection (Framed TCP Client — Labs 0 &amp;amp; 1)&lt;/b&gt;&lt;br&gt;Connects to 127.0.0.1:8888, sends JSON commands ending with \n, and buffers recv(65536) chunks until \n." vertex="1">
+                    <mxGeometry height="95" width="380" x="25" y="385" as="geometry"/>
+                </mxCell>
+                
+                <!-- Right Swimlane: server.py -->
+                <mxCell id="server_container" parent="1" style="swimlane;whiteSpace=wrap;html=1;startSize=35;fillColor=#F0FFF4;strokeColor=#2F855A;fontColor=#22543D;fontStyle=1;fontSize=13;rounded=1;strokeWidth=2;collapsible=0;" value="server.py — Authenticated TCP Security Server (127.0.0.1:8888)" vertex="1">
+                    <mxGeometry height="540" width="550" x="810" y="85" as="geometry"/>
+                </mxCell>
+                <mxCell id="s_listen" parent="server_container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2F855A;fontColor=#1A202C;fontSize=11;align=left;spacingLeft=10;" value="&lt;b&gt;1. SentinelServer &amp;amp; FramedSocket (TCP Listener — Labs 0 &amp;amp; 1 + Ch. 2/3)&lt;/b&gt;&lt;br&gt;Listens on 127.0.0.1:8888, limits active clients to 10 (threading.Lock), and runs one ClientSession thread per client." vertex="1">
+                    <mxGeometry height="85" width="500" x="25" y="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="s_auth" parent="server_container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2F855A;fontColor=#1A202C;fontSize=11;align=left;spacingLeft=10;" value="&lt;b&gt;2. cmd_login() &amp;amp; cmd_otp() (Password + TOTP MFA — Lab 3 + Ch. 14)&lt;/b&gt;&lt;br&gt;Step 1: Verifies salted PBKDF2-HMAC-SHA256 hash (600,000 iterations).&lt;br&gt;Step 2: Verifies 6-digit pyotp TOTP code and blocks replay via last_otp_counter." vertex="1">
+                    <mxGeometry height="90" width="500" x="25" y="165" as="geometry"/>
+                </mxCell>
+                <mxCell id="s_rbac" parent="server_container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2F855A;fontColor=#1A202C;fontSize=11;align=left;spacingLeft=10;" value="&lt;b&gt;3. authorize() &amp;amp; audit() (Role Gatekeeper &amp;amp; Safe Logger — Labs 1 &amp;amp; 3)&lt;/b&gt;&lt;br&gt;Checks session state (AUTHENTICATED) and role (analyst vs. admin). Writes redacted logs (never logs passwords or OTPs)." vertex="1">
+                    <mxGeometry height="85" width="500" x="25" y="280" as="geometry"/>
+                </mxCell>
+                <mxCell id="s_pcap" parent="server_container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2F855A;fontColor=#1A202C;fontSize=11;align=left;spacingLeft=10;" value="&lt;b&gt;4. analyze_pcap() (Offline Scapy PCAP Analyzer — Lab 4 + Ch. 12)&lt;/b&gt;&lt;br&gt;Validates filename with resolve_pcap(), parses packets via rdpcap(), and detects vertical port scans, SYN bursts, and UDP/53 anomalies." vertex="1">
+                    <mxGeometry height="95" width="500" x="25" y="390" as="geometry"/>
+                </mxCell>
+                
+                <!-- Bottom Supporting Files Row -->
+                <mxCell id="file_reports" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDF2F7;strokeColor=#4A5568;fontColor=#1A202C;fontSize=11;align=left;spacingLeft=10;strokeWidth=1.5;" value="&lt;b&gt;reports/ Folder (Output Evidence)&lt;/b&gt;&lt;br&gt;- port_scan_*.csv&lt;br&gt;- http_observations_*.csv &amp;amp; http_findings_*.csv&lt;br&gt;- pcap_analysis_*.json" vertex="1">
+                    <mxGeometry height="100" width="300" x="40" y="690" as="geometry"/>
+                </mxCell>
+                <mxCell id="file_web" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEFCBF;strokeColor=#B7791F;fontColor=#744210;fontSize=11;align=left;spacingLeft=10;strokeWidth=2;" value="&lt;b&gt;test_website.py (Local HTTP Target)&lt;/b&gt;&lt;br&gt;Listens on http://127.0.0.1:8765/&lt;br&gt;Serves /, /health, /redirect, and /missing with intentional header and cookie gaps." vertex="1">
+                    <mxGeometry height="100" width="320" x="380" y="690" as="geometry"/>
+                </mxCell>
+                <mxCell id="file_users" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF5F5;strokeColor=#C53030;fontColor=#742A2A;fontSize=11;align=left;spacingLeft=10;strokeWidth=1.5;" value="&lt;b&gt;users.json (Credential Store)&lt;/b&gt;&lt;br&gt;Stores username, role, salted PBKDF2 hash, Base32 TOTP secret, and last_otp_counter." vertex="1">
+                    <mxGeometry height="100" width="200" x="740" y="690" as="geometry"/>
+                </mxCell>
+                <mxCell id="file_log" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDF2F7;strokeColor=#4A5568;fontColor=#1A202C;fontSize=11;align=left;spacingLeft=10;strokeWidth=1.5;" value="&lt;b&gt;sentinel_audit.log (Audit Log)&lt;/b&gt;&lt;br&gt;Stores timestamped security events with RedactingFilter protection." vertex="1">
+                    <mxGeometry height="100" width="190" x="960" y="690" as="geometry"/>
+                </mxCell>
+                <mxCell id="file_pcap" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FAF5FF;strokeColor=#6B46C1;fontColor=#44337A;fontSize=11;align=left;spacingLeft=10;strokeWidth=1.5;" value="&lt;b&gt;FSCT8561_Operation_Sentinel_Traffic.pcap&lt;/b&gt;&lt;br&gt;Instructor-supplied capture file (123 packets) read offline by server.py." vertex="1">
+                    <mxGeometry height="100" width="190" x="1170" y="690" as="geometry"/>
+                </mxCell>
+
+                <!-- ARROWS -->
+
+                <!-- Step 1: Port Scan (c_scan -> s_listen) -->
+                <mxCell id="edge_scan_server" edge="1" parent="1" source="c_scan" target="s_listen" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2B6CB0;strokeWidth=2;fontColor=#1A365D;fontSize=10;fontStyle=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=classic;" value="Step 1: TCP connect_ex() Scan (ports 8760–8890)&#xa;Detects server.py (8888) &amp; test_website.py (8765) OPEN">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="620" y="292"/>
+                            <mxPoint x="620" y="182"/>
+                        </Array>
+                        <mxPoint x="0" y="-18" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+
+                <!-- Step 2: HTTP Security Check (c_http -> file_web) - Exits RIGHT of c_http, never enters c_tcp! -->
+                <mxCell id="edge_http_web" edge="1" parent="1" source="c_http" target="file_web" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#B7791F;strokeWidth=2;fontColor=#744210;fontSize=10;fontStyle=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=classic;" value="Step 2: HTTP GET (8765)&#xa;Headers, cookies, &amp; status">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="540" y="402"/>
+                            <mxPoint x="540" y="655"/>
+                            <mxPoint x="540" y="690"/>
+                        </Array>
+                        <mxPoint x="20" y="-30" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+
+                <!-- Step 3: MFA Auth (c_tcp -> s_auth) -->
+                <mxCell id="edge_tcp_auth" edge="1" parent="1" source="c_tcp" target="s_auth" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2F855A;strokeWidth=2;fontColor=#22543D;fontSize=10;fontStyle=1;exitX=1;exitY=0.35;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=classic;" value="Step 3: Plain TCP Auth (8888)&#xa;LOGIN + 6-digit TOTP -&gt; AUTHENTICATED">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="700" y="503"/>
+                            <mxPoint x="700" y="295"/>
+                        </Array>
+                        <mxPoint x="0" y="-18" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+
+                <!-- Step 4: PCAP Analysis & Diag (c_tcp <-> s_pcap) -->
+                <mxCell id="edge_tcp_pcap" edge="1" parent="1" source="c_tcp" target="s_pcap" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6B46C1;strokeWidth=2;fontColor=#44337A;fontSize=10;fontStyle=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;endArrow=classic;" value="Step 4: Authenticated Requests (PCAP_ANALYZE, WHOAMI, DIAG)&#xa;Returns PCAP summary + 6 findings over TCP">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="640" y="541"/>
+                            <mxPoint x="640" y="522"/>
+                        </Array>
+                        <mxPoint x="0" y="-18" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+
+                <!-- Client -> reports/ -->
+                <mxCell id="edge_client_reports" edge="1" parent="1" source="client_container" target="file_reports" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#4A5568;strokeWidth=1.5;dashed=1;fontSize=10;fontColor=#4A5568;exitX=0.35;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=classic;" value="Saves CSV &amp; JSON reports">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="0" y="-10" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+
+                <!-- Server -> users.json -->
+                <mxCell id="edge_server_users" edge="1" parent="1" source="server_container" target="file_users" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#C53030;strokeWidth=1.5;dashed=1;fontSize=10;fontColor=#742A2A;exitX=0.08;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;startArrow=classic;endArrow=classic;" value="Reads/updates users.json">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="0" y="-10" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+
+                <!-- Server -> sentinel_audit.log -->
+                <mxCell id="edge_server_log" edge="1" parent="1" source="server_container" target="file_log" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#4A5568;strokeWidth=1.5;dashed=1;fontSize=10;fontColor=#4A5568;exitX=0.45;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=classic;" value="Appends safe audit events">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="0" y="-10" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+
+                <!-- Server -> Traffic.pcap -->
+                <mxCell id="edge_server_pcap" edge="1" parent="1" source="server_container" target="file_pcap" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6B46C1;strokeWidth=1.5;dashed=1;fontSize=10;fontColor=#44337A;exitX=0.82;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=classic;" value="Reads offline via Scapy">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="0" y="-10" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

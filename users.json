@@ -1,0 +1,62 @@
+{
+  "analyst": {
+    "role": "analyst",
+    "password": {
+      "algo": "pbkdf2_sha256",
+      "iterations": 600000,
+      "salt": "ce789edd4611fd6c26ea6a25872eab9a",
+      "hash": "4c3d3c7054d31faa1027eee081e4cd0de30a806ca392f4f09a39d51d41e1c3a2"
+    },
+    "totp_secret": "4XYER3YJ5BME7IG6RPHDUURLU46MD37H",
+    "last_otp_counter": 59757777,
+    "created_utc": "2026-10-23T05:28:28+00:00"
+  },
+  "admin": {
+    "role": "admin",
+    "password": {
+      "algo": "pbkdf2_sha256",
+      "iterations": 600000,
+      "salt": "52af44b9a3fd97f3d3a1db1034df2bf6",
+      "hash": "35039e6ae58ebf9384ecc722d78e89b8eb643d73afc2c361333b5e472e0473ea"
+    },
+    "totp_secret": "ZN53L2537K5H5FWXFOGZPJTRYWIYQ6OS",
+    "last_otp_counter": null,
+    "created_utc": "2026-10-23T05:28:31+00:00"
+  },
+  "analyst_rbac": {
+    "role": "analyst",
+    "password": {
+      "algo": "pbkdf2_sha256",
+      "iterations": 600000,
+      "salt": "8c669651f0ccdc8c94c9063d23e0f4a0",
+      "hash": "8516909f0ef6a6902fb94d2814437543f4e81b1fd44fa5bf933ede664d93e0a6"
+    },
+    "totp_secret": "BKC25Z33VDIWJKD7OTDUFM4WDZHDEYOI",
+    "last_otp_counter": 59757777,
+    "created_utc": "2026-10-23T05:28:29+00:00"
+  },
+  "analyst_pcap": {
+    "role": "analyst",
+    "password": {
+      "algo": "pbkdf2_sha256",
+      "iterations": 600000,
+      "salt": "cc21df77abe9bf343683aa7996e8e5ca",
+      "hash": "2025801263b0378fc53eeff16226582f3e1e24273c39e343f0aed2c4252e9980"
+    },
+    "totp_secret": "4BK5U4LBS4PZQRZAEIVXXGSJ3XSTJBC3",
+    "last_otp_counter": 59757777,
+    "created_utc": "2026-10-23T05:28:29+00:00"
+  },
+  "analyst_replay": {
+    "role": "analyst",
+    "password": {
+      "algo": "pbkdf2_sha256",
+      "iterations": 600000,
+      "salt": "96600903229788c7906a20e8260e32ea",
+      "hash": "2a23e13a468f6f212d4543f45c868c048a00c3ca8b37597b5581f6b009e45398"
+    },
+    "totp_secret": "PVE342AYICCKGWANS5YC7G6RLNR36OUL",
+    "last_otp_counter": 59757777,
+    "created_utc": "2026-10-23T05:28:30+00:00"
+  }
+}
