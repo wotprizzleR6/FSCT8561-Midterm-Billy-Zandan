@@ -1,5 +1,0 @@
-endpoint,method,status,reason,length,content_type,server,location,set_cookie,elapsed_ms,error
-/,GET,200,OK,90,text/html; charset=utf-8,FSCT8561LabHTTP/1.0 ,-,training_session=demo123; Path=/,3.4,
-/health,GET,200,OK,2,text/plain,FSCT8561LabHTTP/1.0 ,-,-,1.8,
-/redirect,GET,302,Found,0,-,FSCT8561LabHTTP/1.0 ,/,-,1.6,
-/missing,GET,404,Not Found,9,text/plain,FSCT8561LabHTTP/1.0 ,-,-,1.6,
