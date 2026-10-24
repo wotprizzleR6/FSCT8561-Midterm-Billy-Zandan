@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="nGWbqZ_m1UolCKilgelw" name="Page-1">
-        <mxGraphModel dx="1468" dy="946" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="1459" dy="1135" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -19,7 +19,7 @@
                 <mxCell id="c3" parent="client_container" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=6;fontSize=10;fillColor=#ffffff;strokeColor=#000000;" value="3. http_check() (Local HTTP Checker)&lt;br&gt;Sends normal GET requests to check security&amp;nbsp;&lt;div&gt;headers, cookie flags, and server banners.&lt;/div&gt;" vertex="1">
                     <mxGeometry height="115" width="236" x="12" y="318" as="geometry"/>
                 </mxCell>
-                <mxCell id="c4" parent="client_container" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=6;fontSize=10;fillColor=#ffffff;strokeColor=#000000;" value="4. SentinelConnection (Framed TCP Client)&lt;br&gt;Connects to 127.0.0.1:8888 and  exchanges&amp;nbsp;&lt;div&gt;newline-delimited JSON  requests and&amp;nbsp;&lt;/div&gt;&lt;div&gt;responses over TCP.&lt;/div&gt;" vertex="1">
+                <mxCell id="c4" parent="client_container" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=6;fontSize=10;fillColor=#ffffff;strokeColor=#000000;" value="4. Connection (Framed TCP Client)&lt;br&gt;Connects to 127.0.0.1:8888 and  exchanges&amp;nbsp;&lt;div&gt;newline-delimited JSON  requests and&amp;nbsp;&lt;/div&gt;&lt;div&gt;responses over TCP.&lt;/div&gt;" vertex="1">
                     <mxGeometry height="125" width="236" x="12" y="460" as="geometry"/>
                 </mxCell>
                 <mxCell id="server_container" parent="1" style="swimlane;whiteSpace=wrap;html=1;startSize=25;strokeWidth=2;fontSize=11;fillColor=#ffffff;strokeColor=#000000;swimlaneFillColor=#ffffff;" value="&lt;b&gt;server.py (127.0.0.1:8888)&lt;/b&gt;" vertex="1">
@@ -34,7 +34,7 @@
                 <mxCell id="s3" parent="server_container" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=6;fontSize=10;fillColor=#ffffff;strokeColor=#000000;" value="3. authorize() &amp;amp; audit() (&lt;span style=&quot;color: rgb(63, 63, 63); scrollbar-color: rgba(139, 148, 158, 0.2) rgb(13, 17, 23); text-align: center;&quot;&gt;&lt;font&gt;RBAC and Audit Logger&lt;/font&gt;&lt;/span&gt;)&lt;br&gt;Checks authenticated session state and roles analyst and admin.&amp;nbsp;&lt;span style=&quot;color: rgb(63, 63, 63); background-color: transparent;&quot;&gt;Writes redacted logs which never logs passwords or OTPs.&lt;/span&gt;" vertex="1">
                     <mxGeometry height="115" width="286" x="12" y="318" as="geometry"/>
                 </mxCell>
-                <mxCell id="s4" parent="server_container" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=6;fontSize=10;fillColor=#ffffff;strokeColor=#000000;" value="4. analyze_pcap() (Offline Scapy PCAP Analyzer)&lt;br&gt;Validates filename with resolve_pcap(), parses packets via rdpcap(), and detects vertical port scans, SYN bursts, and UDP/53 anomalies." vertex="1">
+                <mxCell id="s4" parent="server_container" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=6;fontSize=10;fillColor=#ffffff;strokeColor=#000000;" value="4. analyze_pcap() (Scapy PCAP Analyzer)&lt;br&gt;Validates filename with resolve_pcap(), parses packets with rdpcap(), and detects vertical port scans, SYN bursts, and UDP/53 anomalies." vertex="1">
                     <mxGeometry height="125" width="286" x="12" y="460" as="geometry"/>
                 </mxCell>
                 <mxCell id="b1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=6;fontSize=10;fillColor=#ffffff;strokeColor=#000000;" value="reports/ Folder (Output Evidence)&lt;br&gt;- port_scan_*.csv&lt;br&gt;- http_observations_*.csv &amp;amp; http_findings_*.csv&lt;br&gt;- pcap_analysis_*.json" vertex="1">

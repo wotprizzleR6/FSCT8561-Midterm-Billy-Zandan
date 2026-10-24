@@ -1,62 +1,62 @@
 {
-  "analyst": {
-    "role": "analyst",
-    "password": {
-      "algo": "pbkdf2_sha256",
-      "iterations": 600000,
-      "salt": "ce789edd4611fd6c26ea6a25872eab9a",
-      "hash": "4c3d3c7054d31faa1027eee081e4cd0de30a806ca392f4f09a39d51d41e1c3a2"
-    },
-    "totp_secret": "4XYER3YJ5BME7IG6RPHDUURLU46MD37H",
-    "last_otp_counter": 59757777,
-    "created_utc": "2026-10-23T05:28:28+00:00"
-  },
   "admin": {
     "role": "admin",
     "password": {
       "algo": "pbkdf2_sha256",
       "iterations": 600000,
-      "salt": "52af44b9a3fd97f3d3a1db1034df2bf6",
-      "hash": "35039e6ae58ebf9384ecc722d78e89b8eb643d73afc2c361333b5e472e0473ea"
+      "salt": "26990732e572f9a8412cde332dcc0b4d",
+      "hash": "cb451dd8b9a59534bf5c00da33b7418c6f5b4910cd1cbd07e78c968214ec32a1"
     },
-    "totp_secret": "ZN53L2537K5H5FWXFOGZPJTRYWIYQ6OS",
+    "totp_secret": "K655RM2ZYDXA37FG3JVPWVDHCC5ULAK2",
     "last_otp_counter": null,
-    "created_utc": "2026-10-23T05:28:31+00:00"
+    "created_utc": "2026-10-24T04:58:28+00:00"
   },
   "analyst_rbac": {
     "role": "analyst",
     "password": {
       "algo": "pbkdf2_sha256",
       "iterations": 600000,
-      "salt": "8c669651f0ccdc8c94c9063d23e0f4a0",
-      "hash": "8516909f0ef6a6902fb94d2814437543f4e81b1fd44fa5bf933ede664d93e0a6"
+      "salt": "3000161a6cc309efe0bdecf03397c228",
+      "hash": "fbc50d84e9e15d57fece72b9c3815b773337010396728615cc5e1034a89eb5f2"
     },
-    "totp_secret": "BKC25Z33VDIWJKD7OTDUFM4WDZHDEYOI",
-    "last_otp_counter": 59757777,
-    "created_utc": "2026-10-23T05:28:29+00:00"
+    "totp_secret": "RIXBXFXVFUJLDF5HQMTGBHRCN3TASHLY",
+    "last_otp_counter": 59760596,
+    "created_utc": "2026-10-24T04:58:26+00:00"
   },
   "analyst_pcap": {
     "role": "analyst",
     "password": {
       "algo": "pbkdf2_sha256",
       "iterations": 600000,
-      "salt": "cc21df77abe9bf343683aa7996e8e5ca",
-      "hash": "2025801263b0378fc53eeff16226582f3e1e24273c39e343f0aed2c4252e9980"
+      "salt": "405e96a2e804d1422bd0b27aa8b8e70b",
+      "hash": "2c1fde30d2c0af346ce41ccd2012f660233e816272f93cc0fa2c265c749da310"
     },
-    "totp_secret": "4BK5U4LBS4PZQRZAEIVXXGSJ3XSTJBC3",
-    "last_otp_counter": 59757777,
-    "created_utc": "2026-10-23T05:28:29+00:00"
+    "totp_secret": "XR63TNTFQ6CJFR3X46QVM4XIINUWYQYE",
+    "last_otp_counter": 59760597,
+    "created_utc": "2026-10-24T04:58:27+00:00"
   },
   "analyst_replay": {
     "role": "analyst",
     "password": {
       "algo": "pbkdf2_sha256",
       "iterations": 600000,
-      "salt": "96600903229788c7906a20e8260e32ea",
-      "hash": "2a23e13a468f6f212d4543f45c868c048a00c3ca8b37597b5581f6b009e45398"
+      "salt": "ab02cd8ee59f44753dc4c5f254ccf5a5",
+      "hash": "507f6897836085ae8a4fce6745b1dbd948b2eb6232782b0ec5ddc71a6a97eafe"
     },
-    "totp_secret": "PVE342AYICCKGWANS5YC7G6RLNR36OUL",
-    "last_otp_counter": 59757777,
-    "created_utc": "2026-10-23T05:28:30+00:00"
+    "totp_secret": "FGKLOZTAOSUVCNLPFRNZ6RJULW2IAPTH",
+    "last_otp_counter": 59760597,
+    "created_utc": "2026-10-24T04:58:27+00:00"
+  },
+  "analyst": {
+    "role": "analyst",
+    "password": {
+      "algo": "pbkdf2_sha256",
+      "iterations": 600000,
+      "salt": "7fce1331aaaba95bd695b8625afca74b",
+      "hash": "54f97c219735cc200e25b165a0fd4b2a0204508d98f95cf98ec7b84af9c3b01e"
+    },
+    "totp_secret": "EUTERQ5GUYHIXUZQNQOFHTYCIM4G56US",
+    "last_otp_counter": 59760596,
+    "created_utc": "2026-10-24T04:58:25+00:00"
   }
 }

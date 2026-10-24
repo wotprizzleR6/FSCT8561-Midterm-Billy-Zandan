@@ -1,13 +1,13 @@
 [
   {
-    "test_id": "TEST-01",
+    "test_id": "Test 1",
     "category": "Authentication & MFA",
     "title": "Successful 2-Factor Authentication",
     "objective": "Verify complete login sequence with valid password and valid TOTP code",
     "input": {
       "user": "analyst",
       "password": "[SUPPLIED]",
-      "otp": "638330"
+      "otp": "581152"
     },
     "expected": "CHALLENGE OTP_REQUIRED followed by OK AUTHENTICATED (role: analyst)",
     "actual": {
@@ -15,11 +15,11 @@
       "otp_resp": "AUTHENTICATED",
       "whoami_user": "analyst"
     },
-    "status": "PASS",
+    "status": "Passed",
     "notes": "Session successfully established with role 'analyst'."
   },
   {
-    "test_id": "TEST-02",
+    "test_id": "Test 2",
     "category": "Authentication & MFA",
     "title": "Failed Password Verification",
     "objective": "Verify server rejects incorrect password with generic error and decrements attempts",
@@ -33,11 +33,11 @@
       "code": "AUTH_FAILED",
       "attempts_remaining": 2
     },
-    "status": "PASS",
+    "status": "Passed",
     "notes": "Uniform timing preserved; remaining attempts accurately tracked."
   },
   {
-    "test_id": "TEST-03",
+    "test_id": "Test 3",
     "category": "Authentication & MFA",
     "title": "Failed TOTP Verification",
     "objective": "Verify server rejects incorrect 6-digit TOTP code after valid password verification",
@@ -50,11 +50,11 @@
       "status": "ERROR",
       "code": "AUTH_FAILED"
     },
-    "status": "PASS",
+    "status": "Passed",
     "notes": "Rejection does not expose internal verification state."
   },
   {
-    "test_id": "TEST-04",
+    "test_id": "Test 4",
     "category": "Authorization",
     "title": "Unauthorized Access Rejection",
     "objective": "Verify protected command (PCAP_ANALYZE) is rejected when unauthenticated",
@@ -67,11 +67,11 @@
       "code": "AUTH_REQUIRED",
       "message": "Authentication (password + OTP) required."
     },
-    "status": "PASS",
+    "status": "Passed",
     "notes": "Protected server diagnostic commands cannot be accessed anonymously."
   },
   {
-    "test_id": "TEST-05",
+    "test_id": "Test 5",
     "category": "Authorization",
     "title": "Role-Based Access Control Enforcement",
     "objective": "Verify authenticated user with 'analyst' role is blocked from admin-only 'DIAG' command",
@@ -85,11 +85,11 @@
       "code": "FORBIDDEN",
       "message": "Role 'analyst' is not permitted to run DIAG."
     },
-    "status": "PASS",
+    "status": "Passed",
     "notes": "Principle of Least Privilege enforced on administrative endpoints."
   },
   {
-    "test_id": "TEST-06",
+    "test_id": "Test 6",
     "category": "TCP Port Scanner",
     "title": "Open Port Detection (8765 & 8888)",
     "objective": "Verify bounded TCP port scanner identifies active test services on 8765 and 8888",
@@ -104,11 +104,11 @@
         8888
       ]
     },
-    "status": "PASS",
+    "status": "Passed",
     "notes": "Reachable ports identified via 3-way handshake completion."
   },
   {
-    "test_id": "TEST-07",
+    "test_id": "Test 7",
     "category": "TCP Port Scanner",
     "title": "Closed Port Detection",
     "objective": "Verify bounded TCP scanner correctly reports closed state for inactive port",
@@ -121,11 +121,11 @@
       "port": 8766,
       "state": "closed"
     },
-    "status": "PASS",
+    "status": "Passed",
     "notes": "TCP RST received from operating system kernel."
   },
   {
-    "test_id": "TEST-08",
+    "test_id": "Test 8",
     "category": "HTTP Checker",
     "title": "HTTP Baseline Configuration Inspection",
     "objective": "Verify HTTP checker flags missing CSP, missing nosniff, cookie insecurity, and Server header",
@@ -142,18 +142,18 @@
     "actual": {
       "total_findings": 10,
       "categories": [
-        "Information disclosure",
-        "Transport security",
-        "Exposed endpoint",
         "Cookie attributes",
+        "Exposed endpoint",
+        "Transport security",
+        "Information disclosure",
         "Missing security header"
       ]
     },
-    "status": "PASS",
+    "status": "Passed",
     "notes": "Identifies baseline hardening gaps without false exploit claims."
   },
   {
-    "test_id": "TEST-09",
+    "test_id": "Test 9",
     "category": "HTTP Checker",
     "title": "HTTP Connection Failure Handling",
     "objective": "Verify HTTP checker gracefully handles connection refused without unhandled exceptions",
@@ -165,11 +165,11 @@
       "reachable": false,
       "status": "CONNECTION_FAILED"
     },
-    "status": "PASS",
+    "status": "Passed",
     "notes": "Graceful timeout and connection error containment verified."
   },
   {
-    "test_id": "TEST-10",
+    "test_id": "Test 10",
     "category": "PCAP Analysis",
     "title": "Server-Side PCAP Analysis & Threat Detection",
     "objective": "Verify server loads PCAP, computes summary, and detects vertical scan, SSH burst, and UDP/53 anomaly",
@@ -181,17 +181,17 @@
       "packet_count": 123,
       "detections": [
         "Repeated SYN burst to single service",
-        "Unanswered connection attempts",
-        "Protocol mismatch on UDP/53 (DNS)",
         "Port scan (vertical)",
-        "High packet rate (volume anomaly)"
+        "Protocol mismatch on UDP/53 (DNS)",
+        "High packet rate (volume anomaly)",
+        "Unanswered connection attempts"
       ]
     },
-    "status": "PASS",
+    "status": "Passed",
     "notes": "Server Scapy rdpcap() extracted all 6 suspicious activity indicators."
   },
   {
-    "test_id": "TEST-11",
+    "test_id": "Test 11",
     "category": "Protocol Hardening",
     "title": "Malformed Frame & Schema Validation",
     "objective": "Verify server rejects invalid JSON frames and unexpected fields with structured errors",
@@ -204,28 +204,28 @@
       "subtest_a_code": "BAD_JSON",
       "subtest_b_code": "BAD_REQUEST"
     },
-    "status": "PASS",
+    "status": "Passed",
     "notes": "Framing and JSON decoders enforce strict boundaries and schema validation."
   },
   {
-    "test_id": "TEST-12",
+    "test_id": "Test 12",
     "category": "Authentication & MFA",
     "title": "TOTP Token Anti-Replay Enforcement",
     "objective": "Verify identical TOTP token cannot be reused across multiple sessions within same 30s window",
     "input": {
       "user": "analyst_replay",
-      "replayed_otp": "464633"
+      "replayed_otp": "930213"
     },
     "expected": "Session 1: OK AUTHENTICATED; Session 2 (Replay): ERROR AUTH_FAILED",
     "actual": {
       "session1_code": "AUTHENTICATED",
       "session2_code": "AUTH_FAILED"
     },
-    "status": "PASS",
+    "status": "Passed",
     "notes": "last_otp_counter atomically checked; replay blocked and audited."
   },
   {
-    "test_id": "TEST-13",
+    "test_id": "Test 13",
     "category": "Session Management",
     "title": "Clean Client-Server Disconnection",
     "objective": "Verify EXIT command returns BYE GOODBYE and gracefully terminates the TCP session",
@@ -238,23 +238,23 @@
       "code": "GOODBYE",
       "connected": false
     },
-    "status": "PASS",
+    "status": "Passed",
     "notes": "TCP connection shutdown cleanly without lingering half-open state."
   },
   {
-    "test_id": "TEST-14",
+    "test_id": "Test 14",
     "category": "Audit & Logging",
     "title": "Audit Log Credential Sanitization",
     "objective": "Inspect sentinel_audit.log to verify zero passwords, raw tokens, or secrets were written",
     "input": {
-      "audit_file": "C:\\Users\\BillyZ\\Desktop\\FSCT8561-Labs-Billy-Zandan\\Midterm\\sentinel_audit.log"
+      "audit_file": "C:\\Users\\BillyZ\\Desktop\\FSCT8561-Midterm-Billy-Zandan\\sentinel_audit.log"
     },
     "expected": "No plaintext passwords, raw OTPs, or secret keys in log records",
     "actual": {
-      "audit_entries": 666,
+      "audit_entries": 1531,
       "leaks_detected": []
     },
-    "status": "PASS",
+    "status": "Passed",
     "notes": "Strict RedactingFilter and redaction helpers sanitize all security event logs."
   }
 ]

@@ -40,7 +40,7 @@ AUDIT_LOG_PATH = BASE_DIR / "sentinel_audit.log"
 PCAP_DIR = BASE_DIR
 DEFAULT_PCAP = "FSCT8561_Operation_Sentinel_Traffic.pcap"
 
-# Framing / resource limits against DoS
+# Framing/resource limits against DoS
 MAX_REQUEST_BYTES = 16 * 1024       # A request frame larger than this is a malformed attack
 RECV_CHUNK = 4096
 IDLE_TIMEOUT_S = 300                # Drop silent clients so threads are not held forever
@@ -74,7 +74,7 @@ ROLE_PERMISSIONS = {
     "analyst": {"WHOAMI", "PCAP_ANALYZE", "LOGOUT"},
 }
 
-# PCAP detection thresholds (justified in Part D)
+# PCAP detection thresholds (justified in Part D of the report)
 SCAN_WINDOW_S = 10.0 
 SCAN_DISTINCT_PORTS = 10
 BURST_WINDOW_S = 5.0 # Unanswered SYN burst to a single service
@@ -86,11 +86,11 @@ RATE_THRESHOLD = 15
 WELL_KNOWN_SERVICES = {20: "ftp-data", 21: "ftp", 22: "ssh", 23: "telnet", 25: "smtp", 53: "dns", 80: "http", 443: "https", 3389: "rdp"}
 
 
-# From Lab 1 (server status logs) and Lab 3 (authentication attempts).
-# What I added that is not from the labs: Built-in RedactingFilter regex mask, CRLF control-character
-# stripping (clean()), and masking failed unknown usernames as "<unenrolled>".
-# Midterm_Instructions.pdf Part D & Part E8 require security-event logging without
-# recording passwords or OTPs. Python logging setup is from the Ortega textbook Ch. 1.
+# From Lab 1 (server status logs) and Lab 3 (authentication attempts). 
+#   Built-in RedactingFilter regex mask, CRLF control-character
+#   stripping (clean()), and masking failed unknown usernames as "<unenrolled>".
+# Midterm_Instructions.pdf Part D & Part E8 require security-event logging without recording passwords or OTPs. 
+# Python logging setup is from the Ortega textbook Ch. 1.
 SENSITIVE_KEYS = {"password", "passwd", "otp", "token", "secret", "totp_secret", "code"}
 _REDACT_RE = re.compile(
     r'(?i)("?(?:password|passwd|otp|token|secret|totp_secret)"?\s*[:=]\s*)("[^"]*"|\S+)'
@@ -148,11 +148,12 @@ def audit(event: str, level: int = logging.INFO, **fields: object) -> None:
     logger.log(level, " ".join(parts))
 
 
-# From Lab 3 (Lab3/Codes/auth_server.py: verify_password())
-# What I added that is not from the labs: Upgraded from plain SHA-256 to salted PBKDF2-HMAC-SHA256
-# with a 16-byte random salt, plus hmac.compare_digest() for constant-time checks.
-# The Lab 3 noted that real systems should use PBKDF2 with salts instead of
-# plain SHA-256, and cryptography/hashing is covered in the Ortega textbook Ch. 14.
+# From Lab 3 (Lab3/Codes/auth_server.py: 
+#   verify_password())
+#   Upgraded from plain SHA-256 to salted PBKDF2-HMAC-SHA256
+#   with a 16-byte random salt, plus hmac.compare_digest() for constant-time checks.
+# Lab 3 noted that real systems should use PBKDF2 with salts instead of
+# plain SHA-256, and cryptography/hashing is from the Ortega textbook Ch. 14.
 def hash_password(password: str, salt: bytes | None = None,
                   iterations: int = PBKDF2_ITERATIONS) -> dict:
     """Return a storable record. A unique random salt defeats precomputed /
@@ -181,10 +182,11 @@ def verify_password(password: str, record: dict) -> bool:
 DUMMY_PASSWORD_RECORD = hash_password(secrets.token_urlsafe(16))
 
 
-# From Lab 3 (Lab3/Codes/auth_server.py & auth_client.py: pyotp.TOTP and random_base32())
-# What I added that is not from the labs: Lab 3's totp.verify() accepts the same code multiple
-# times inside the 30-second window. match_totp() returns the time-step counter so it can save
-# last_otp_counter and block OTP replay. Followed instructions from Part C in the Midterm_Instructions.pdf.
+# From Lab 3 (Lab3/Codes/auth_server.py & auth_client.py: 
+#   pyotp.TOTP and random_base32())
+#   Lab 3's totp.verify() accepts the same code multiple times inside the 30-second window. 
+#   match_totp() returns the time-step counter so it can save
+#   last_otp_counter and block OTP replay. Followed instructions from Part C in the Midterm_Instructions.pdf.
 def match_totp(secret: str, otp: str, valid_window: int = TOTP_VALID_WINDOW) -> int | None:
     """Return the matching TOTP time-step counter, or None.
 
@@ -291,10 +293,10 @@ class UserStore:
             return True
 
 
-# From Lab 3, Lab3/Codes/Part 17 Code.py: MAX_FAILED = 3 attempt threshold.
-# What I added that is not from the labs: Lab 3 only counted failures per connection,
-# so an attacker could reconnect to get more tries. LockoutTracker counts failures
-# across connections and locks the account for 120s after 5 failed attempts.
+# From Lab 3, Lab3/Codes/Part 17 Code.py: 
+#   MAX_FAILED = 3 attempt threshold.
+#   Lab 3 only counted failures per connection, so an attacker could reconnect to get more tries. 
+#   LockoutTracker counts failures across connections and locks the account for 120s after 5 failed attempts.
 class LockoutTracker:
     """Per-account failure counter shared by all connections, so an attacker
     cannot bypass the per-session limit simply by reconnecting."""
@@ -336,10 +338,11 @@ class LockoutTracker:
             return sum(1 for e in self._state.values() if e["locked_until"] > now)
 
 
-# From Labs 0 & 1, raw_socket/server.socket.py and challenge/server.py: sendall() and recv().
-# What I added that is not from the labs: Buffers incoming bytes until the \n newline
-# character instead of assuming one recv(1024) call is always one complete message.
-# Based on socket methods in the Ortega textbook Ch. 3 and instructions from the Part E1 Midterm_Instructions.pdf.
+# From Labs 0 & 1, raw_socket/server.socket.py and challenge/server.py: 
+#   sendall() and recv().
+#   Buffers incoming bytes until the \n newline
+#   character instead of assuming one recv(1024) call is always one complete message.
+# This is also based on socket methods in the Ortega textbook Ch. 3 and instructions from the Part E1 Midterm_Instructions.pdf.
 class ConnectionClosed(Exception):
     """Peer closed the TCP connection (recv returned b'')."""
 
@@ -380,7 +383,6 @@ class FramedSocket:
 
 
 # Protocol helpers
-
 class ProtocolError(Exception):
     """Raised by handlers to produce a structured ERROR response."""
 
@@ -455,11 +457,12 @@ def parse_request(line: bytes) -> tuple[str, dict, object]:
     return cmd.upper(), args, req_id
 
 
-# From Lab 4 (Lab4/Part1_Code.py to Part4_Code.py: Scapy rdpcap(), IP/TCP/UDP/ICMP layer
-# filtering, Raw payload inspection, and sliding-window packet rate detection).
-# What I added that is not from the labs: Two-pointer sliding window (_max_in_window) for faster time-window 
-# checks. Detections for vertical port scans, SSH SYN bursts, and non-DNS traffic on UDP/53. 
-# resolve_pcap() to check filenames and cap files at 50 MB.
+# From Lab 4 (Lab4/Part1_Code.py to Part4_Code.py: 
+#   Scapy rdpcap() 
+#   IP/TCP/UDP/ICMP layer filtering, Raw payload inspection, and sliding-window packet rate detection).
+#   Two-pointer sliding window (_max_in_window) for faster time-window checks. 
+#   Detections for vertical port scans, SSH SYN bursts, and non-DNS traffic on UDP/53. 
+#   resolve_pcap() to check filenames and cap files at 50 MB.
 # Taken from Lab 4 and the Ortega textbook Ch. 12 Packet analysis with Scapy.
 def _utc(ts: float) -> str:
     return datetime.fromtimestamp(ts, tz=timezone.utc).isoformat(timespec="milliseconds")
@@ -756,12 +759,11 @@ def analyze_pcap(path: Path) -> dict:
                            "of compromise. The capture is synthetic and uses documentation addresses.")}
 
 
-# From Labs 1 & 3 (Lab 1 server.py command loop and Lab 3 auth_server.py two-step
-# password + OTP challenge-response).
-# What I added that is not from the labs: Per-thread ClientSession class so login state stays separate 
-# for each connected client. Role check (authorize()) separating 'admin' and 'analyst' commands.
-# Idle timeout (300s) and closing the connection after 5 bad requests.
-# Based on Labs 1 & 3 and instructions from Parts A, C, and E in Midterm_Instructions.pdf.
+# From Labs 1 & 3 (Lab 1 server.py command loop and Lab 3 auth_server.py two-step password + OTP challenge-response).
+#   Per-thread ClientSession class so login state stays separate for each connected client. 
+#   Role check (authorize()) separating 'admin' and 'analyst' commands.
+#   Idle timeout (300s) and closing the connection after 5 bad requests.
+# Based on Labs 1 and 3 and instructions from Parts A, C, and E in Midterm_Instructions.pdf.
 STATE_CONNECTED = "CONNECTED"
 STATE_OTP_PENDING = "OTP_PENDING"
 STATE_AUTHENTICATED = "AUTHENTICATED"
@@ -1089,10 +1091,10 @@ def resolve_pcap(name: object) -> Path:
     return candidate
 
 
-# From Labs 0 & 1 (Lab 0 raw_socket/server.socket.py bind/listen/accept and
-# Lab 1 challenge/server.py multi-threaded client handling with threading.Thread).
-# What I added that is not from the labs: analyze_with_cache() so repeated PCAP_ANALYZE requests do not re-parse the same file. Clean socket 
-# shutdown via shutdown(socket.SHUT_RDWR).
+# From Labs 0 & 1 (Lab 0 raw_socket/server.socket.py bind/listen/accept and Lab 1 challenge/server.py 
+# multi-threaded client handling with threading.Thread).
+#   analyze_with_cache() so repeated PCAP_ANALYZE requests do not re-parse the same file. Clean socket 
+#   shutdown via shutdown(socket.SHUT_RDWR).
 # Taken from Labs 0 & 1 and the Ortega textbook Ch. 2 Threading and Ch. 3 Sockets.
 class SentinelServer:
     def __init__(self, host: str, port: int, users: UserStore):
@@ -1164,8 +1166,8 @@ class SentinelServer:
         self._listener = self._create_listener()
         audit("SERVER_START", host=self.host, port=self.port, users=self.users.count(),
               pcap_dir=PCAP_DIR.name, transport="plain_tcp")
-        print(f"[*] {SERVER_VERSION} listening on {self.host}:{self.port}  (Ctrl+C to stop)")
-        print("[!] Transport is plain TCP (not encrypted) - localhost testing only.")
+        print(f"{SERVER_VERSION} listening on {self.host}:{self.port}  (Ctrl+C to stop)")
+        print("Transport is plain TCP (not encrypted) - localhost testing only.")
         try:
             while not self.stopping.is_set():
                 try:
@@ -1187,7 +1189,7 @@ class SentinelServer:
                 threading.Thread(target=self._run_session, args=(session,),
                                  name=f"client-{session.id}", daemon=True).start()
         except KeyboardInterrupt:
-            print("\n[*] Ctrl+C received - shutting down.")
+            print("\nCtrl+C received - shutting down.")
         finally:
             self.shutdown()
 
@@ -1258,24 +1260,24 @@ def password_policy_errors(password: str) -> list[str]:
 
 def enroll_user(store: UserStore, username: str, role: str, force: bool) -> int:
     if not USERNAME_RE.fullmatch(username):
-        print("[-] Username must be 1-32 characters: letters, digits, '_', '.', '-'.")
+        print(" Username must be 1-32 characters: letters, digits, '_', '.', '-'.")
         return 1
     if store.get(username) and not force:
-        print(f"[-] User '{username}' already exists (use --force to re-enroll).")
+        print(f" User '{username}' already exists (use --force to re-enroll).")
         return 1
     password = read_secret(f"New password for {username}: ")
     problems = password_policy_errors(password)
     if problems:
-        print("[-] Password must have " + ", ".join(problems) + ".")
+        print(" Password must have " + ", ".join(problems) + ".")
         return 1
     if read_secret("Confirm password: ") != password:
-        print("[-] Passwords do not match.")
+        print(" Passwords do not match.")
         return 1
     secret = pyotp.random_base32()
     store.add_user(username, password, role, secret)
     uri = pyotp.TOTP(secret).provisioning_uri(name=username, issuer_name=TOTP_ISSUER)
-    print(f"[+] Enrolled '{username}' with role '{role}'. Password stored as PBKDF2 hash.")
-    print("[!] Add this TOTP secret to an authenticator app NOW. It is shown only once")
+    print(f"Enrolled '{username}' with role '{role}'. Password stored as PBKDF2 hash.")
+    print("Add this TOTP secret to an authenticator app NOW. It is shown only once")
     print("    on screen and is never written to the audit log.")
     print(f"    Secret : {secret}")
     print(f"    URI    : {uri}")
@@ -1288,7 +1290,7 @@ def show_otp(store: UserStore, username: str) -> int:
     the system can be tested without a phone. Disable in production."""
     record = store.get(username)
     if not record:
-        print(f"[-] No such user '{username}'.")
+        print(f" No such user '{username}'.")
         return 1
     totp = pyotp.TOTP(record["totp_secret"])
     remaining = int(totp.interval - (time.time() % totp.interval))
@@ -1322,7 +1324,7 @@ def main() -> int:
     try:
         store = UserStore(USER_DB_PATH)
     except (OSError, ValueError, json.JSONDecodeError) as exc:
-        print(f"[-] Could not load user database: {type(exc).__name__}")
+        print(f" Could not load user database: {type(exc).__name__}")
         return 1
 
     if args.enroll:
@@ -1331,14 +1333,14 @@ def main() -> int:
         return show_otp(store, args.show_otp)
 
     if store.count() == 0:
-        print("[-] No users enrolled. Run:  python server.py --enroll <username> --role admin")
+        print(" No users enrolled. Run:  python server.py --enroll <username> --role admin")
         return 1
 
     server = SentinelServer(args.host, args.port, store)
     try:
         server.serve_forever()
     except OSError as exc:
-        print(f"[-] Could not start server on {args.host}:{args.port}: {exc}")
+        print(f" Could not start server on {args.host}:{args.port}: {exc}")
         return 1
     return 0
 

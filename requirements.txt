@@ -1,0 +1,5 @@
+# FSCT 8561 - Operation Sentinel Dependencies
+pyotp>=2.9.0
+requests>=2.31.0
+scapy>=2.5.0
+python-nmap>=0.7.1

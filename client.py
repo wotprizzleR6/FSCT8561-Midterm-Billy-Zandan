@@ -84,11 +84,11 @@ def prompt_int(text: str, default: int, low: int, high: int) -> int:
         try:
             value = int(raw)
         except ValueError:
-            print(f"  [!] '{raw}' is not a number.")
+            print(f"   '{raw}' is not a number.")
             continue
         if low <= value <= high:
             return value
-        print(f"  [!] Value must be between {low} and {high}.")
+        print(f"   Value must be between {low} and {high}.")
 
 
 def save_csv(filename: str, rows: list[dict], fieldnames: list[str]) -> Path | None:
@@ -104,7 +104,7 @@ def save_csv(filename: str, rows: list[dict], fieldnames: list[str]) -> Path | N
                                  for k, v in row.items()})
         return path
     except OSError as exc:
-        print(f"  [!] Could not write {filename}: {exc}")
+        print(f"   Could not write {filename}: {exc}")
         return None
 
 
@@ -115,7 +115,7 @@ def save_json(filename: str, data: dict) -> Path | None:
         path.write_text(json.dumps(data, indent=2), encoding="utf-8")
         return path
     except OSError as exc:
-        print(f"  [!] Could not write {filename}: {exc}")
+        print(f"   Could not write {filename}: {exc}")
         return None
 
 
@@ -124,12 +124,12 @@ def timestamp() -> str:
 
 
 
-# from Lab 2
-# Uses socket.gethostbyname() hostname resolution from Lab 2.
-# Added these that are not from the labs: resolve_authorized_host() verifies that the
-# resolved IP is a loopback address (ipaddress.ip_address(ip).is_loopback).
-# validate_http_target() verifies scheme, host, and bans credentials in URL. 
-# These came from the URL validation techniques from Chapter 4 of the Ortega textbook.
+# From Lab 2
+#   Uses socket.gethostbyname() hostname resolution from Lab 2.
+#   Other added features not in the labs 0-5: 
+#   resolve_authorized_host() verifies that the resolved IP is a loopback address (ipaddress.ip_address(ip).is_loopback).
+#   validate_http_target() verifies scheme, host, and bans credentials in URL. 
+# Other features came from the URL validation techniques from Chapter 4 of the Ortega textbook.
 class ScopeError(ValueError):
     """Raise an error if there is a non-authorized IP address entered instead of just crashing everything."""
 
@@ -161,20 +161,20 @@ def validate_http_target(url: str) -> str:
 
 
 
-# from LABS 0 & 1 TCP client socket
-# Lab 0-5 Lineage: Raw socket initialization (socket.socket(AF_INET, SOCK_STREAM))
-# and socket.connect() from Lab 0 (raw_socket/client.socket.py) and Lab 1 (client.py).
-# What i added that is not from the labs: 
-# A Stream Accumulator (_read_frame): Dynamic buffer reading up to '\n' to guarantee
-# full JSON frame assembly regardless of TCP segment fragmentation.
-# req_id counter pairing requests with server responses.
-# Clean TCP FIN via shutdown(socket.SHUT_RDWR).
-# from textbook Ch. 3 (Socket Information Gathering).
+# From Labs 0 & 1 TCP client socket
+#   Raw socket initialization (socket.socket(AF_INET, SOCK_STREAM))
+#   and socket.connect() from Lab 0 (raw_socket/client.socket.py) and Lab 1 (client.py).
+# Other added features not in the labs 0-5:
+#   A Stream Accumulator (_read_frame): Dynamic buffer reading up to '\n' to guarantee
+#   full JSON frame assembly regardless of TCP segment fragmentation.
+#   req_id counter pairing requests with server responses.
+#   Clean TCP FIN via shutdown(socket.SHUT_RDWR).
+# From textbook Ch. 3 (Socket Information Gathering).
 class ServerDisconnected(Exception):
     """The server closed the connection or the socket failed."""
 
 # Changed from data = sock.recv(1024) from Lab 0 and 1 to make it fit for TCP
-class SentinelConnection:
+class Connection:
     """Newline-delimited JSON over TCP. Buffering until '\\n' means a large
     response split over many TCP segments is still read as ONE message."""
 
@@ -292,12 +292,16 @@ class SentinelConnection:
         return self._send_bytes(line.encode("utf-8", errors="replace") + b"\n")
 
 
+# Backwards compatibility alias
+SentinelConnection = Connection
 
-# From LAB 2 TCP PORT SCANNER
+
+
+# From Lab 2 TCP PORT SCANNER
 #   scan_port(): Inherits raw TCP connect_ex() from Lab 2 (Part 7 Code.py).
 #   get_service(): Inherits socket.getservbyport() from Lab 2 (Part 9 Code.py).
 #   run_nmap_scan(): Inherits python-nmap PortScanner & PATH resolution from Lab 2 (nmap_scanner.py).
-# What i added that is not in the labs:
+# Other added features not in the labs 0-5:
 #   A Concurrency Pool: ThreadPoolExecutor(max_workers=64) from the Ortega textbook Ch. 2, 
 #   this reduces scan time from 65+ seconds down to under 3 seconds.
 #   Tri-State Result Classification: Seperate open (0), closed
@@ -307,7 +311,7 @@ class SentinelConnection:
 #   (from Lab 2) caused closed ports to be falsely flagged as 'filtered'.
 #   Conceptual Nuance: Explicitly prints that 'open' denotes reachability,
 #   not necessarily vulnerability.
-# taken from Ortega textbook Ch. 2 & Microsoft Winsock TCP Stack Behavior.
+# taken from Ortega textbook Ch. 2 and Microsoft Winsock TCP Stack Behavior.
 def get_service(port: int) -> str:
     """Lab 2 get_service(), with labels for the known lab services."""
     if port in KNOWN_LAB_SERVICES:
@@ -357,7 +361,7 @@ def find_nmap() -> bool:
 
 def run_nmap_scan(ip: str, start: int, end: int) -> list[tuple[int, str]]:
     """From Lab 2 nmap_scanner.py. -sT is the TCP connect scan,
-    -Pn is to skip host discovery. This is from the Ortega textbook Ch. 8 Scanning Networks with Nmap."""
+    -Pn is to skip host discovery. More from the Ortega textbook Ch. 8 Scanning Networks with Nmap."""
     scanner = nmap.PortScanner()
     scanner.scan(ip, f"{start}-{end}", arguments="-sT -Pn")
     results = []
@@ -398,12 +402,10 @@ def port_scan(target: str, start: int, end: int, engine: str = "socket") -> dict
 def print_scan_report(report: dict, server_port: int) -> None:
     banner(f"Port scan: {report['ip']} TCP {report['range']} ({report['engine']} engine)")
     print(f"{'PORT':<8}{'STATE':<10}SERVICE")
-    print("-" * 56)
     for item in report["open"]:
         print(f"{item['port']:<8}{item['state']:<10}{item['service']}")
     if not report["open"]:
         print("(no open ports in range)")
-    print("-" * 56)
     summary = ", ".join(f"{k}={v}" for k, v in sorted(report["states"].items()))
     print(f"Scanned {len(report['results'])} ports in {report['duration_s']}s  ->  {summary}")
     open_ports = {i["port"] for i in report["open"]}
@@ -419,26 +421,25 @@ def print_scan_report(report: dict, server_port: int) -> None:
 
 
 
-# from LAB 5
-# - Labs 0-5:
+# From Labs 0-5:
 #   requests.get(): Inherits HTTP probing and connect/read timeouts from Lab 5.
-#   * Header Baselines: Inherits inspection of Content-Security-Policy and
-#     X-Content-Type-Options: nosniff from Lab 5 (Lab5.ipynb).
-#   * Finding De-duplication: Inherits set() de-duplication principle from Lab 5.
-#   * CSV Export: Inherits csv.DictWriter export pattern from Lab 5.
-# - Added Beyond Labs:
-#   * FindingSet Class: Aggregates repeated baseline gaps across multiple endpoints
-#     under a single finding ID (inspired by commercial scanners like Nessus/OpenVAS).
-#   * Deep Cookie Attribute Auditing: Uses raw urllib3 header lists to inspect
-#     each Set-Cookie header individually for HttpOnly, SameSite, and Secure flags.
-#   * Redirect Inspection: Uses allow_redirects=False to inspect 301/302 responses
-#     for HTTPS->HTTP downgrade or off-site open redirects.
-#   * Error Content Fingerprinting: Scans 4xx/5xx responses for internal debug leaks
-#     (traceback, werkzeug, sqlite).
-#   * Core Conceptual Nuance: Stamped with REVIEW_STATUS ("Configuration review -
-#     not proof of exploitability"). A missing header weakened defense-in-depth,
-#     but does not constitute an active exploitable vulnerability on its own.
-# - Source: Lab 5 Guidelines & Ortega textbook Ch. 4 and Ch. 10.
+#   Header Baselines: Inherits inspection of Content-Security-Policy and
+#   X-Content-Type-Options: nosniff from Lab 5 (Lab5.ipynb).
+#   Finding De-duplication: Inherits set() de-duplication principle from Lab 5.
+#   CSV Export: Inherits csv.DictWriter export pattern from Lab 5.
+# Other added features not in the labs 0-5:
+#   FindingSet Class: Aggregates repeated baseline gaps across multiple endpoints
+#   under a single finding ID (inspired by commercial scanners like Nessus/OpenVAS).
+#   Deep Cookie Attribute Auditing: Uses raw urllib3 header lists to inspect
+#   each Set-Cookie header individually for HttpOnly, SameSite, and Secure flags.
+#   Redirect Inspection: Uses allow_redirects=False to inspect 301/302 responses
+#   for HTTPS->HTTP downgrade or off-site open redirects.
+#   Error Content Fingerprinting: Scans 4xx/5xx responses for internal debug leaks
+#   (traceback, werkzeug, sqlite).
+#   Core Conceptual Nuance: Stamped with REVIEW_STATUS ("Configuration review -
+#   not proof of exploitability"). A missing header weakened defense-in-depth,
+#   but does not constitute an active exploitable vulnerability on its own.
+# Source: Lab 5 Guidelines and Ortega textbook Ch. 4 and Ch. 10.
 REVIEW_STATUS = "Configuration review - not proof of exploitability"
 
 HTML_HEADERS = {
@@ -651,7 +652,6 @@ def http_check(base_url: str, paths: list[str] | None = None) -> dict:
 def print_http_report(report: dict) -> None:
     banner(f"HTTP configuration check: {report['target']}")
     print(f"{'ENDPOINT':<11}{'STATUS':<19}{'LENGTH':<8}{'CONTENT-TYPE':<27}LOCATION")
-    print("-" * 72)
     for obs in report["observations"]:
         if isinstance(obs["status"], int):
             print(f"{obs['endpoint']:<11}{str(obs['status']) + ' ' + obs['reason']:<19}"
@@ -716,8 +716,7 @@ def print_pcap_report(data: dict) -> None:
 
 def print_response(resp: dict) -> None:
     status, code, message = resp.get("status"), resp.get("code"), resp.get("message")
-    tag = {"OK": "+", "CHALLENGE": "?", "ERROR": "-", "BYE": "*"}.get(status, "?")
-    print(f"[{tag}] {status} {code}: {message}")
+    print(f"{status} {code}: {message}")
     if status == "ERROR" and code in ("AUTH_REQUIRED", "FORBIDDEN"):
         print("    (request rejected by the server's authorization check)")
 
@@ -727,7 +726,7 @@ def print_response(resp: dict) -> None:
 #   Command Loop: Inherits the interactive loop and clean EXIT command from Lab 1 client.py.
 #   Hidden Credentials: Uses getpass.getpass() from Lab 3 auth_client.py to ensure passwords and OTP tokens are never echoed to the screen.
 #   Two-Step Challenge Sequence: Implements LOGIN -> OTP challenge workflow from Lab 3 auth_client.py.
-#   Added Beyond Labs:
+# Other added features not in labs 0-5:
 #   Session State Awareness: Tracks authenticated username, active role, and
 #   session expiration time directly in the client instance.
 #   Resilient Reconnection: If server disconnects, local tools (port scan,
@@ -736,7 +735,7 @@ def print_response(resp: dict) -> None:
 
 class AnalystConsole:
     def __init__(self, server_host: str, server_port: int, http_target: str, scan_start: int, scan_end: int):
-        self.conn = SentinelConnection(server_host, server_port)
+        self.conn = Connection(server_host, server_port)
         self.http_target = http_target
         self.scan_start, self.scan_end = scan_start, scan_end
         self.user: str | None = None
@@ -752,20 +751,20 @@ class AnalystConsole:
                   f"(framing: {welcome.get('data', {}).get('framing')}, "
                   f"encrypted: {welcome.get('data', {}).get('transport_encrypted')})")
         except ConnectionRefusedError:
-            print(f"[-] Connection refused by {self.conn.host}:{self.conn.port} - is server.py running?")
+            print(f"Connection refused by {self.conn.host}:{self.conn.port} - is server.py running?")
         except socket.timeout:
-            print(f"[-] Connection to {self.conn.host}:{self.conn.port} timed out.")
+            print(f"Connection to {self.conn.host}:{self.conn.port} timed out.")
         except (ServerDisconnected, OSError) as exc:
-            print(f"[-] Could not connect: {exc}")
+            print(f"Could not connect: {exc}")
 
     def _lost(self, exc: Exception) -> None:
         self.user = self.role = None
-        print(f"[-] Server connection lost: {exc}")
+        print(f"Server connection lost: {exc}")
         print("    Local tools (port scan, HTTP check) still work. Use option 1 to reconnect.")
 
     def call(self, cmd: str, args: dict | None = None) -> dict | None:
         if not self.conn.connected:
-            print("[-] Not connected to the server. Use option 1 to connect.")
+            print("Not connected to the server. Use option 1 to connect.")
             return None
         try:
             resp = self.conn.request(cmd, args)
@@ -784,15 +783,15 @@ class AnalystConsole:
     # menu actions
     def login(self) -> None:
         if not self.conn.connected:
-            print("[-] Not connected. Use option 1 first.")
+            print("Not connected. Use option 1 first.")
             return
         username = prompt("Username")
         if not USERNAME_RE.fullmatch(username):
-            print("[-] Username must be 1-32 characters: letters, digits, '_', '.', '-'.")
+            print("Username must be 1-32 characters: letters, digits, '_', '.', '-'.")
             return
         password = read_secret("Password: ")
         if not password:
-            print("[-] Password cannot be empty.")
+            print("Password cannot be empty.")
             return
         resp = self.call("LOGIN", {"username": username, "password": password})
         del password  # This is to not keep the plaintext in memory longer than needed
@@ -809,9 +808,9 @@ class AnalystConsole:
             otp = read_secret("6-digit TOTP code: ").strip()
             if OTP_RE.fullmatch(otp):
                 break
-            print("  [!] The code must be exactly 6 digits.")
+            print("The code must be exactly 6 digits.")
         else:
-            print("[-] No valid code entered. Run login again.")
+            print("No valid code entered. Run login again.")
             return
         resp = self.call("OTP", {"otp": otp})
         if resp is None:
@@ -833,29 +832,29 @@ class AnalystConsole:
             if prompt("Engine: 1) socket connect scan  2) python-nmap (-sT)", "1") == "2":
                 engine = "nmap"
         try:
-            print(f"[*] Scanning {target} TCP {start}-{end} with the {engine} engine ...")
+            print(f"Scanning {target} TCP {start}-{end} with the {engine} engine ...")
             report = port_scan(target, start, end, engine)
         except ScopeError as exc:
-            print(f"[-] Scope violation: {exc}")
+            print(f"Scope violation: {exc}")
             return
         except ValueError as exc:
-            print(f"[-] Invalid input: {exc}")
+            print(f"Invalid input: {exc}")
             return
         except Exception as exc:  # for nmap errors
-            print(f"[-] Scan failed: {type(exc).__name__}: {exc}")
+            print(f"Scan failed: {type(exc).__name__}: {exc}")
             return
         print_scan_report(report, self.conn.port)
         path = save_csv(f"port_scan_{timestamp()}.csv", report["results"], ["port", "state", "service"])
         if path:
-            print(f"[+] Results saved to {path}")
+            print(f"Results saved to {path}")
 
     def http_check_menu(self) -> None:
         target = prompt("Target URL", self.http_target)
         try:
-            print(f"[*] Checking {target} paths {', '.join(HTTP_PATHS)} ...")
+            print(f"Checking {target} paths {', '.join(HTTP_PATHS)} ...")
             report = http_check(target)
         except ScopeError as exc:
-            print(f"[-] Scope violation: {exc}")
+            print(f"Scope violation: {exc}")
             return
         print_http_report(report)
         stamp = timestamp()
@@ -866,11 +865,11 @@ class AnalystConsole:
                       ["id", "severity", "category", "endpoints", "observation",
                        "why_it_matters", "recommendation", "status"])
         if p1 and p2:
-            print(f"[+] Saved {p1.name} and {p2.name} in {REPORT_DIR}")
+            print(f"Saved {p1.name} and {p2.name} in {REPORT_DIR}")
 
     def pcap_menu(self) -> None:
         name = prompt("PCAP file on server", DEFAULT_PCAP)
-        print("[*] Requesting server-side analysis ...")
+        print("Requesting server-side analysis ...")
         resp = self.call("PCAP_ANALYZE", {"file": name})
         if resp is None:
             return
@@ -880,7 +879,7 @@ class AnalystConsole:
         print_pcap_report(resp.get("data", {}))
         path = save_json(f"pcap_analysis_{timestamp()}.json", resp.get("data", {}))
         if path:
-            print(f"[+] Full JSON result saved to {path}")
+            print(f"Full JSON result saved to {path}")
 
     def diag(self) -> None:
         resp = self.call("DIAG")
@@ -912,7 +911,7 @@ class AnalystConsole:
         print('Example: {"v":1,"cmd":"PCAP_ANALYZE","args":{}}   or   not-json')
         line = input("raw> ")
         if not self.conn.connected:
-            print("[-] Not connected to the server.")
+            print("Not connected to the server.")
             return
         try:
             resp = self.conn.send_raw(line)
@@ -962,7 +961,7 @@ class AnalystConsole:
                 break
             action = actions.get(choice)
             if action is None:
-                print("[!] Invalid.")
+                print("Invalid.")
                 continue
             try:
                 action()
@@ -1013,7 +1012,7 @@ def main() -> int:
     try:
         console.run()
     except KeyboardInterrupt:
-        print("\n[*] Interrupted - closing connection.")
+        print("\nInterrupted - closing connection.")
         console.conn.close(send_exit=True)
     return 0
 

@@ -1,19 +1,3 @@
-#!/usr/bin/env python3
-"""
-FSCT 8561 Midterm - Operation Sentinel
-run_tests.py - Comprehensive Automated Test Harness (Part F Verification)
-
-Executes all 10+ required test scenarios against live instances of:
-  - test_website.py (listening on 127.0.0.1:8765)
-  - server.py (listening on 127.0.0.1:8888)
-
-Generates structured test evidence with:
-  - Test ID, Category, Title, Objective
-  - Input Payload / Arguments
-  - Expected vs. Actual Output
-  - Pass/Fail Status and Technical Observations
-"""
-
 import errno
 import json
 import os
@@ -28,7 +12,7 @@ import pyotp
 import requests
 
 from client import (
-    SentinelConnection,
+    Connection,
     ServerDisconnected,
     http_check,
     port_scan,
@@ -83,7 +67,7 @@ class TestHarness:
 
     def setup_users(self):
         """Enroll dedicated user accounts for clean, isolated test runs."""
-        print("[*] Enrolling test user accounts in users.json...")
+        print(" Enrolling test user accounts in users.json.")
         users_to_enroll = [
             ("analyst", "Cyber123!", "analyst"),
             ("analyst_rbac", "Cyber123!", "analyst"),
@@ -105,14 +89,14 @@ class TestHarness:
         self._free_port_if_in_use(8765)
         self._free_port_if_in_use(8888)
         self.setup_users()
-        print("[*] Starting test_website.py on 127.0.0.1:8765...")
+        print(" Starting test_website.py on 127.0.0.1:8765.")
         self.web_proc = subprocess.Popen(
             [sys.executable, str(BASE_DIR / "test_website.py")],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
 
-        print("[*] Starting server.py on 127.0.0.1:8888...")
+        print("Starting server.py on 127.0.0.1:8888.")
         self.server_proc = subprocess.Popen(
             [sys.executable, str(BASE_DIR / "server.py")],
             stdout=subprocess.DEVNULL,
@@ -127,21 +111,21 @@ class TestHarness:
                 s1.close()
                 s2 = socket.create_connection(("127.0.0.1", 8888), timeout=0.2)
                 s2.close()
-                print("[+] Both test services are up and accepting connections.\n")
+                print("Both test services are up and accepting connections.\n")
                 return
             except OSError:
                 pass
         raise RuntimeError("Failed to start background test services.")
 
     def stop_services(self):
-        print("\n[*] Terminating background test services...")
+        print("\n Terminating background test services...")
         if self.server_proc:
             self.server_proc.terminate()
             self.server_proc.wait()
         if self.web_proc:
             self.web_proc.terminate()
             self.web_proc.wait()
-        print("[+] Test services stopped cleanly.")
+        print("Test services stopped cleanly.")
 
     def record(self, test_id, category, title, objective, input_data, expected, actual, passed, notes=""):
         res = {
@@ -152,11 +136,11 @@ class TestHarness:
             "input": input_data,
             "expected": expected,
             "actual": actual,
-            "status": "PASS" if passed else "FAIL",
+            "status": "Passed" if passed else "Failed",
             "notes": notes,
         }
         self.results.append(res)
-        tag = "[PASS]" if passed else "[FAIL]"
+        tag = "Passed" if passed else "Failed"
         print(f" {tag} {test_id}: {title}")
         if not passed:
             print(f"       Expected: {expected}")
@@ -185,7 +169,7 @@ class TestHarness:
 
     def test_1_auth_success(self):
         """Test 1: Full 2-Factor Authentication Flow (Password + TOTP)"""
-        conn = SentinelConnection("127.0.0.1", 8888)
+        conn = Connection("127.0.0.1", 8888)
         conn.connect()
         resp1 = conn.request("LOGIN", {"username": "analyst", "password": "Cyber123!"})
         step1_ok = (resp1.get("status") == "CHALLENGE" and resp1.get("code") == "OTP_REQUIRED")
@@ -200,7 +184,7 @@ class TestHarness:
         conn.close(send_exit=True)
         passed = step1_ok and step2_ok and step3_ok
         self.record(
-            "TEST-01",
+            "Test 1",
             "Authentication & MFA",
             "Successful 2-Factor Authentication",
             "Verify complete login sequence with valid password and valid TOTP code",
@@ -213,7 +197,7 @@ class TestHarness:
 
     def test_2_auth_bad_password(self):
         """Test 2: Failed Password Authentication"""
-        conn = SentinelConnection("127.0.0.1", 8888)
+        conn = Connection("127.0.0.1", 8888)
         conn.connect()
         resp = conn.request("LOGIN", {"username": "analyst", "password": "WrongPassword999!"})
         conn.close(send_exit=True)
@@ -223,7 +207,7 @@ class TestHarness:
             and resp.get("data", {}).get("attempts_remaining") == 2
         )
         self.record(
-            "TEST-02",
+            "Test 2",
             "Authentication & MFA",
             "Failed Password Verification",
             "Verify server rejects incorrect password with generic error and decrements attempts",
@@ -236,14 +220,14 @@ class TestHarness:
 
     def test_3_auth_bad_otp(self):
         """Test 3: Failed TOTP MFA Step"""
-        conn = SentinelConnection("127.0.0.1", 8888)
+        conn = Connection("127.0.0.1", 8888)
         conn.connect()
         conn.request("LOGIN", {"username": "analyst", "password": "Cyber123!"})
         resp = conn.request("OTP", {"otp": "000000"})
         conn.close(send_exit=True)
         passed = (resp.get("status") == "ERROR" and resp.get("code") == "AUTH_FAILED")
         self.record(
-            "TEST-03",
+            "Test 3",
             "Authentication & MFA",
             "Failed TOTP Verification",
             "Verify server rejects incorrect 6-digit TOTP code after valid password verification",
@@ -256,13 +240,13 @@ class TestHarness:
 
     def test_4_unauthenticated_rejection(self):
         """Test 4: Rejection of Protected Command Without Authentication"""
-        conn = SentinelConnection("127.0.0.1", 8888)
+        conn = Connection("127.0.0.1", 8888)
         conn.connect()
         resp = conn.request("PCAP_ANALYZE", {"file": "FSCT8561_Operation_Sentinel_Traffic.pcap"})
         conn.close(send_exit=True)
         passed = (resp.get("status") == "ERROR" and resp.get("code") == "AUTH_REQUIRED")
         self.record(
-            "TEST-04",
+            "Test 4",
             "Authorization",
             "Unauthorized Access Rejection",
             "Verify protected command (PCAP_ANALYZE) is rejected when unauthenticated",
@@ -275,7 +259,7 @@ class TestHarness:
 
     def test_5_role_forbidden(self):
         """Test 5: Role-Based Access Control (Analyst attempting Admin command)"""
-        conn = SentinelConnection("127.0.0.1", 8888)
+        conn = Connection("127.0.0.1", 8888)
         conn.connect()
         conn.request("LOGIN", {"username": "analyst_rbac", "password": "Cyber123!"})
         conn.request("OTP", {"otp": get_current_otp("analyst_rbac")})
@@ -284,7 +268,7 @@ class TestHarness:
         conn.close(send_exit=True)
         passed = (resp.get("status") == "ERROR" and resp.get("code") == "FORBIDDEN")
         self.record(
-            "TEST-05",
+            "Test 5",
             "Authorization",
             "Role-Based Access Control Enforcement",
             "Verify authenticated user with 'analyst' role is blocked from admin-only 'DIAG' command",
@@ -303,7 +287,7 @@ class TestHarness:
         has_server = 8888 in open_ports
         passed = has_web and has_server
         self.record(
-            "TEST-06",
+            "Test 6",
             "TCP Port Scanner",
             "Open Port Detection (8765 & 8888)",
             "Verify bounded TCP port scanner identifies active test services on 8765 and 8888",
@@ -320,7 +304,7 @@ class TestHarness:
         res = report["results"][0]
         passed = (res["port"] == 8766 and res["state"] == "closed")
         self.record(
-            "TEST-07",
+            "Test 7",
             "TCP Port Scanner",
             "Closed Port Detection",
             "Verify bounded TCP scanner correctly reports closed state for inactive port",
@@ -340,7 +324,7 @@ class TestHarness:
         has_info = "Information disclosure" in findings_cats
         passed = report["reachable"] and has_headers and has_cookie and has_info
         self.record(
-            "TEST-08",
+            "Test 8",
             "HTTP Checker",
             "HTTP Baseline Configuration Inspection",
             "Verify HTTP checker flags missing CSP, missing nosniff, cookie insecurity, and Server header",
@@ -358,7 +342,7 @@ class TestHarness:
             obs.get("status") == "CONNECTION_FAILED" for obs in report["observations"]
         )
         self.record(
-            "TEST-09",
+            "Test 9",
             "HTTP Checker",
             "HTTP Connection Failure Handling",
             "Verify HTTP checker gracefully handles connection refused without unhandled exceptions",
@@ -371,7 +355,7 @@ class TestHarness:
 
     def test_10_pcap_analysis_detection(self):
         """Test 10: Server-Side PCAP Analysis and Threat Pattern Detection"""
-        conn = SentinelConnection("127.0.0.1", 8888)
+        conn = Connection("127.0.0.1", 8888)
         conn.connect()
         conn.request("LOGIN", {"username": "analyst_pcap", "password": "Cyber123!"})
         conn.request("OTP", {"otp": get_current_otp("analyst_pcap")})
@@ -390,7 +374,7 @@ class TestHarness:
         passed = (resp.get("status") == "OK" and packet_count_ok and has_scan and has_burst and has_proto)
 
         self.record(
-            "TEST-10",
+            "Test 10",
             "PCAP Analysis",
             "Server-Side PCAP Analysis & Threat Detection",
             "Verify server loads PCAP, computes summary, and detects vertical scan, SSH burst, and UDP/53 anomaly",
@@ -403,7 +387,7 @@ class TestHarness:
 
     def test_11_malformed_protocol_input(self):
         """Test 11: Malformed Request and Frame Boundary Hardening"""
-        conn = SentinelConnection("127.0.0.1", 8888)
+        conn = Connection("127.0.0.1", 8888)
         conn.connect()
         # Subtest A: Invalid JSON
         resp1 = conn.send_raw("THIS_IS_NOT_JSON")
@@ -416,7 +400,7 @@ class TestHarness:
         conn.close(send_exit=True)
         passed = a_ok and b_ok
         self.record(
-            "TEST-11",
+            "Test 11",
             "Protocol Hardening",
             "Malformed Frame & Schema Validation",
             "Verify server rejects invalid JSON frames and unexpected fields with structured errors",
@@ -430,7 +414,7 @@ class TestHarness:
     def test_12_otp_replay_blocked(self):
         """Test 12: Anti-Replay Protection on TOTP Tokens"""
         # Session A: Valid login and OTP consumption
-        conn1 = SentinelConnection("127.0.0.1", 8888)
+        conn1 = Connection("127.0.0.1", 8888)
         conn1.connect()
         conn1.request("LOGIN", {"username": "analyst_replay", "password": "Cyber123!"})
         current_code = get_current_otp("analyst_replay")
@@ -438,7 +422,7 @@ class TestHarness:
         conn1.close(send_exit=True)
 
         # Session B: Attacker attempts to replay the same OTP token within the 30-second window
-        conn2 = SentinelConnection("127.0.0.1", 8888)
+        conn2 = Connection("127.0.0.1", 8888)
         conn2.connect()
         conn2.request("LOGIN", {"username": "analyst_replay", "password": "Cyber123!"})
         resp2 = conn2.request("OTP", {"otp": current_code})
@@ -450,7 +434,7 @@ class TestHarness:
             and resp2.get("code") == "AUTH_FAILED"
         )
         self.record(
-            "TEST-12",
+            "Test 12",
             "Authentication & MFA",
             "TOTP Token Anti-Replay Enforcement",
             "Verify identical TOTP token cannot be reused across multiple sessions within same 30s window",
@@ -463,12 +447,12 @@ class TestHarness:
 
     def test_13_clean_session_termination(self):
         """Test 13: Clean Session Termination (EXIT command)"""
-        conn = SentinelConnection("127.0.0.1", 8888)
+        conn = Connection("127.0.0.1", 8888)
         conn.connect()
         resp = conn.request("EXIT")
         passed = (resp.get("status") == "BYE" and resp.get("code") == "GOODBYE" and not conn.connected)
         self.record(
-            "TEST-13",
+            "Test 13",
             "Session Management",
             "Clean Client-Server Disconnection",
             "Verify EXIT command returns BYE GOODBYE and gracefully terminates the TCP session",
@@ -498,7 +482,7 @@ class TestHarness:
             found_leaks.extend(unmasked)
 
         self.record(
-            "TEST-14",
+            "Test 14",
             "Audit & Logging",
             "Audit Log Credential Sanitization",
             "Inspect sentinel_audit.log to verify zero passwords, raw tokens, or secrets were written",
@@ -515,11 +499,9 @@ class TestHarness:
         with open(RESULTS_FILE, "w", encoding="utf-8") as f:
             json.dump(self.results, f, indent=2)
         total = len(self.results)
-        passed = sum(1 for r in self.results if r["status"] == "PASS")
-        print("\n" + "=" * 72)
-        print(f" TEST EXECUTION COMPLETE: {passed}/{total} Passed ({round(passed/total*100, 1)}%)")
-        print(f" Evidence saved to: {RESULTS_FILE}")
-        print("=" * 72 + "\n")
+        passed = sum(1 for r in self.results if r["status"].upper() in ("PASS", "PASSED"))
+        print(f" Test Completed: {passed}/{total} Passed ({round(passed/total*100, 1)}%)")
+        print(f" Output is saved to: {RESULTS_FILE}")
 
 
 if __name__ == "__main__":
