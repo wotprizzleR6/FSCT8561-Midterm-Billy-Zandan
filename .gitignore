@@ -1,6 +1,7 @@
 # Ignore the entire .obsidian configuration folder
-/Auth_MFA_Sequence.drawio
-/portrait.drawio
-/README_Students.txt
-/sentinel_audit.log
+Auth_MFA_Sequence.drawio
+portrait.drawio
+README_Students.txt
+sentinel_audit.log
 reports/
+FSCT8561_Operation_Sentinel_Traffic.pcap
