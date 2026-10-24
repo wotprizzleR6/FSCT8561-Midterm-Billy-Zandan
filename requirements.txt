@@ -1,4 +1,4 @@
-# FSCT 8561 - Operation Sentinel Dependencies
+# FSCT 8561 - Midterm Dependencies
 pyotp>=2.9.0
 requests>=2.31.0
 scapy>=2.5.0
